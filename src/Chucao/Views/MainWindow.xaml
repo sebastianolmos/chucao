@@ -1,0 +1,47 @@
+<Window x:Class="Chucao.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:views="clr-namespace:Chucao.Views"
+        Title="{Binding Localization[Window.Title]}"
+        Language="{Binding Localization.CurrentLanguage, ConverterCulture=en}"
+        Height="640" Width="480" ResizeMode="CanMinimize">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+    </Window.Resources>
+    <Grid>
+        <Grid IsEnabled="{Binding IsContentEnabled}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Margin="16">
+                <Button x:Name="BackButton" Content="{Binding Localization[Lists.Back]}"
+                        Command="{Binding BackCommand}" HorizontalAlignment="Left"
+                        Padding="12,6" MinHeight="36"
+                        Visibility="{Binding HasSelectedList, Converter={StaticResource BooleanToVisibility}}" />
+                <Button Content="{Binding Localization[Language.Toggle]}"
+                        ToolTip="{Binding Localization[Language.ToggleDescription]}"
+                        AutomationProperties.Name="{Binding Localization[Language.ToggleDescription]}"
+                        HorizontalAlignment="Right" Padding="12,6" MinWidth="48" MinHeight="36"
+                        Click="LanguageButton_Click" />
+            </Grid>
+            <views:ListsView x:Name="ListsContent" Grid.Row="1"
+                             Visibility="{Binding IsListsVisible, Converter={StaticResource BooleanToVisibility}}" />
+            <views:ListDetailView Grid.Row="1"
+                                  Visibility="{Binding HasSelectedList, Converter={StaticResource BooleanToVisibility}}" />
+        </Grid>
+        <Grid Background="#80000000"
+              Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibility}}"
+              KeyboardNavigation.TabNavigation="Cycle"
+              KeyboardNavigation.ControlTabNavigation="Cycle"
+              PreviewKeyDown="DialogOverlay_PreviewKeyDown">
+            <Border Background="White" CornerRadius="8" Padding="24" Margin="32"
+                    VerticalAlignment="Center">
+                <Grid>
+                    <views:CreateListView Visibility="{Binding IsCreatingList, Converter={StaticResource BooleanToVisibility}}" />
+                    <views:DeleteListView Visibility="{Binding IsDeletingList, Converter={StaticResource BooleanToVisibility}}" />
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

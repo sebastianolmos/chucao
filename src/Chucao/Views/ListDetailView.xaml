@@ -1,0 +1,10 @@
+<UserControl x:Class="Chucao.Views.ListDetailView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <StackPanel Margin="24,8,24,24">
+        <TextBlock Text="{Binding SelectedList}" FontSize="28" FontWeight="SemiBold"
+                   TextAlignment="Center" TextWrapping="Wrap" />
+        <Button Content="{Binding Localization[Lists.Delete]}" Command="{Binding DeleteListCommand}"
+                Margin="0,24,0,0" Padding="16,10" HorizontalAlignment="Center" />
+    </StackPanel>
+</UserControl>

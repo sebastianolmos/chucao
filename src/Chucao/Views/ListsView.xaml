@@ -1,0 +1,46 @@
+<UserControl x:Class="Chucao.Views.ListsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             DataContextChanged="View_DataContextChanged">
+    <Grid Margin="24,8,24,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel Margin="0,0,0,24">
+            <TextBlock Text="{Binding Localization[Window.Title]}" FontSize="36"
+                       FontWeight="SemiBold" TextAlignment="Center" />
+            <TextBlock Text="{Binding Localization[Practice.Subtitle]}" FontSize="18"
+                       Margin="0,4,0,0" TextAlignment="Center" TextWrapping="Wrap" />
+        </StackPanel>
+        <Border Grid.Row="1" BorderBrush="#B8B8B8" BorderThickness="1" CornerRadius="6" Padding="12">
+            <ScrollViewer x:Name="ListsScrollViewer" VerticalScrollBarVisibility="Auto"
+                          HorizontalScrollBarVisibility="Disabled">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding Lists}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="2" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Margin="4" Padding="10" MinHeight="84"
+                                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
+                                        Command="{Binding DataContext.OpenListCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        CommandParameter="{Binding}">
+                                    <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" />
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <Button x:Name="AddListButton" Content="{Binding Localization[Lists.AddSymbol]}"
+                            Margin="4,10,4,4"
+                            ToolTip="{Binding Localization[Lists.Create]}"
+                            AutomationProperties.Name="{Binding Localization[Lists.Create]}"
+                            FontSize="26" MinHeight="48" Command="{Binding CreateListCommand}" />
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</UserControl>

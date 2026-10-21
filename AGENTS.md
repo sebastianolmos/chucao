@@ -11,7 +11,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Utilizar C#, .NET 10 y WPF.
 - Mantener el proyecto de aplicación en `src/Chucao`.
 - Utilizar CSV para guardar listas y progreso.
-- CsvHelper es la biblioteca prevista para leer y escribir CSV.
+- Utilizar CsvHelper para leer y escribir CSV.
 - Importar TXT en UTF-8, con un concepto por línea.
 - No introducir servicios remotos, bases de datos ni frameworks adicionales sin una necesidad acordada.
 - Implementar el temporizador únicamente cuando forme parte de la tarea solicitada.
@@ -22,6 +22,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Implementar cambios pequeños y centrados en la tarea.
 - Evitar refactorizaciones ajenas a la tarea.
 - Mantener una separación sencilla entre interfaz, lógica de práctica y acceso a archivos.
+- Ubicar vistas y su código visual en `Views`, estado y acciones de pantalla en `ViewModels`, acceso a archivos en `Services` y traducciones en `Resources`. Crear `Models` y `Assets` solo cuando se necesiten.
 - Evitar arquitectura y abstracciones innecesarias.
 - Utilizar nombres de código descriptivos en inglés.
 - Explicar las decisiones relevantes y los conceptos nuevos de C# o WPF.
@@ -36,7 +37,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Centralizar los textos traducibles en recursos de localización separados de la lógica.
 - Evitar textos de interfaz incrustados directamente en C# o XAML cuando deban traducirse.
 - No traducir ni modificar automáticamente los conceptos o los nombres de listas ingresados por el usuario.
-- Acordar el idioma inicial y la persistencia de la preferencia al implementar esta función.
+- Iniciar en inglés si no hay una preferencia guardada y recordar la elección entre ejecuciones.
 - Comprobar el funcionamiento en ambos idiomas, incluyendo el cambio durante una práctica.
 - Verificar que las traducciones se muestren completas y que el selector pueda utilizarse con teclado.
 
@@ -48,7 +49,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Conservar listas y progreso entre ejecuciones.
 - Guardar datos modificables fuera del ejecutable, en una carpeta persistente del usuario.
 - No sobrescribir ni reiniciar datos existentes sin una acción explícita del usuario.
-- Utilizar identificadores estables para listas y conceptos.
+- Guardar cada lista en un CSV con columnas `Concept,SeenOrder`, sin columnas de identificadores ni versión. El nombre visible se recupera del nombre de archivo interno codificado; permitir caracteres no válidos para nombres de archivo Windows.
 - Leer y escribir CSV con una biblioteca que maneje separadores, comillas y caracteres especiales.
 - Manejar listas vacías, líneas vacías y archivos inválidos con mensajes comprensibles.
 - Acordar la política de duplicados al implementar la importación.

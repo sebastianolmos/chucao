@@ -8,4 +8,9 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CsvHelper" Version="33.1.0" />
+    <EmbeddedResource Include="Resources\Translations.csv" />
+  </ItemGroup>
+
 </Project>
