@@ -1,0 +1,33 @@
+<UserControl x:Class="Chucao.Views.TimerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             IsVisibleChanged="View_IsVisibleChanged" Unloaded="View_Unloaded">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibility" />
+    </UserControl.Resources>
+    <Grid Margin="24,8,24,24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" MinHeight="80" />
+            <RowDefinition Height="Auto" MinHeight="72" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding Localization[Timer.Title]}" FontSize="28" FontWeight="SemiBold"
+                   TextAlignment="Center" />
+        <!-- Row 1 is reserved for the future animation. -->
+        <TextBlock Grid.Row="2" Text="{Binding Timer.Concept}" FontSize="28" FontWeight="SemiBold"
+                   TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,8" />
+        <TextBlock Grid.Row="3" Text="{Binding Timer.DisplayTime}" FontSize="64" FontWeight="SemiBold"
+                   TextAlignment="Center" AutomationProperties.Name="{Binding Localization[Timer.Remaining]}" />
+        <TextBlock Grid.Row="4" Text="{Binding Localization[Timer.Finished]}" TextAlignment="Center"
+                   TextWrapping="Wrap" Margin="0,4,0,8"
+                   Visibility="{Binding Timer.IsFinished, Converter={StaticResource BooleanToVisibility}}" />
+        <Button x:Name="StartButton" Grid.Row="5" Content="{Binding Timer.ActionText}"
+                Command="{Binding Timer.ToggleCommand}" Padding="12,10" Margin="0,12,0,12" />
+        <Button Grid.Row="6" Content="{Binding Localization[Lists.Back]}"
+                Command="{Binding ReturnFromTimerCommand}" Padding="12,10" />
+    </Grid>
+</UserControl>

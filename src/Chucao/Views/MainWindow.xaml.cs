@@ -11,7 +11,7 @@ namespace Chucao.Views;
 
 public partial class MainWindow : Window
 {
-    private readonly MainViewModel viewModel = new();
+    private readonly MainViewModel viewModel;
     private readonly SettingsService settings = new();
     private bool canSaveSettings = true;
     private IInputElement? dialogPreviousFocus;
@@ -19,13 +19,19 @@ public partial class MainWindow : Window
 
     public MainWindow()
     {
+        viewModel = new MainViewModel(settings: settings);
         InitializeComponent();
         DataContext = viewModel;
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
         viewModel.WarningRequested += ShowListWarning;
         additionNoticeTimer.Tick += AdditionNoticeTimer_Tick;
-        Closed += (_, _) => additionNoticeTimer.Stop();
+        Closed += (_, _) =>
+        {
+            additionNoticeTimer.Stop();
+            viewModel.Timer.Pause();
+        };
         Loaded += (_, _) => viewModel.LoadLists();
+        Loaded += (_, _) => viewModel.LoadTimerSettings();
         try
         {
             viewModel.Localization.CurrentLanguage = settings.LoadLanguage();
@@ -56,12 +62,19 @@ public partial class MainWindow : Window
                 {
                     if (dialogPreviousFocus is UIElement { IsVisible: true, IsEnabled: true } element)
                         element.Focus();
-                    else if (viewModel.HasSelectedList)
+                    else if (viewModel.IsListDetailVisible)
                         BackButton.Focus();
-                    else
+                    else if (viewModel.IsListsVisible)
                         ListsContent.FocusAddButton();
                 }));
         }
+
+        if (e.PropertyName == nameof(MainViewModel.IsTimerVisible) && !viewModel.IsTimerVisible)
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                if (viewModel.IsListsVisible && !viewModel.IsDialogOpen)
+                    ListsContent.FocusTimerButton();
+            }));
 
         if (e.PropertyName == nameof(MainViewModel.HasSelectedList))
             Dispatcher.BeginInvoke(new Action(() =>

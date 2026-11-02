@@ -6,8 +6,9 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <StackPanel Margin="0,0,0,24">
+        <StackPanel Margin="0,0,0,16">
             <TextBlock Text="{Binding Localization[Window.Title]}" FontSize="36"
                        FontWeight="SemiBold" TextAlignment="Center" />
             <TextBlock Text="{Binding Localization[Practice.Subtitle]}" FontSize="18"
@@ -25,7 +26,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Margin="4" Padding="10" MinHeight="84"
+                                <Button Margin="4" Padding="8" MinHeight="60"
                                         HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                         Command="{Binding DataContext.OpenListCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}">
@@ -38,9 +39,11 @@
                             Margin="4,10,4,4"
                             ToolTip="{Binding Localization[Lists.Create]}"
                             AutomationProperties.Name="{Binding Localization[Lists.Create]}"
-                            FontSize="26" MinHeight="48" Command="{Binding CreateListCommand}" />
+                            FontSize="24" MinHeight="40" Command="{Binding CreateListCommand}" />
                 </StackPanel>
             </ScrollViewer>
         </Border>
+        <Button x:Name="TimerButton" Grid.Row="2" Content="{Binding Localization[Timer.Title]}"
+                Command="{Binding OpenTimerCommand}" Padding="12,10" Margin="0,16,0,0" />
     </Grid>
 </UserControl>

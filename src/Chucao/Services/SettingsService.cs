@@ -8,7 +8,6 @@ namespace Chucao.Services;
 public sealed class SettingsService
 {
     private readonly string filePath;
-    private Dictionary<string, string> values = new();
 
     public SettingsService(string? filePath = null)
     {
@@ -17,10 +16,23 @@ public sealed class SettingsService
             "Chucao", "settings.csv");
     }
 
-    public string LoadLanguage()
+    public string LoadLanguage() => ReadValues()["Language"];
+
+    public int LoadTimerMinutes()
+    {
+        var values = ReadValues();
+        if (!values.TryGetValue("TimerMinutes", out string? text))
+            return 1;
+        if (!int.TryParse(text, NumberStyles.None, CultureInfo.InvariantCulture, out int minutes)
+            || minutes is < 1 or > 59)
+            throw new InvalidDataException("Unsupported timer duration.");
+        return minutes;
+    }
+
+    private Dictionary<string, string> ReadValues()
     {
         if (!File.Exists(filePath))
-            return "en";
+            return new Dictionary<string, string> { ["Language"] = "en" };
 
         using var reader = new StreamReader(filePath, Encoding.UTF8);
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -35,8 +47,7 @@ public sealed class SettingsService
             || language is not ("en" or "es"))
             throw new InvalidDataException("Missing or unsupported language preference.");
 
-        values = loadedValues;
-        return language;
+        return loadedValues;
     }
 
     public void SaveLanguage(string language)
@@ -44,10 +55,25 @@ public sealed class SettingsService
         if (language is not ("en" or "es"))
             throw new ArgumentOutOfRangeException(nameof(language));
 
+        var updatedValues = ReadValues();
+        updatedValues["Language"] = language;
+        SaveValues(updatedValues);
+    }
+
+    public void SaveTimerMinutes(int minutes)
+    {
+        if (minutes is < 1 or > 59)
+            throw new ArgumentOutOfRangeException(nameof(minutes));
+        var updatedValues = ReadValues();
+        updatedValues["TimerMinutes"] = minutes.ToString(CultureInfo.InvariantCulture);
+        SaveValues(updatedValues);
+    }
+
+    private void SaveValues(Dictionary<string, string> updatedValues)
+    {
         string directory = Path.GetDirectoryName(Path.GetFullPath(filePath))!;
         Directory.CreateDirectory(directory);
         string temporaryPath = Path.Combine(directory, $"{Guid.NewGuid():N}.tmp");
-        var updatedValues = new Dictionary<string, string>(values) { ["Language"] = language };
         try
         {
             using (var writer = new StreamWriter(temporaryPath, false, new UTF8Encoding(false)))
@@ -62,7 +88,6 @@ public sealed class SettingsService
 
             // Replace only after the complete CSV has been written successfully.
             File.Move(temporaryPath, filePath, overwrite: true);
-            values = updatedValues;
         }
         finally
         {

@@ -1,0 +1,18 @@
+<UserControl x:Class="Chucao.Views.SettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             IsVisibleChanged="View_IsVisibleChanged">
+    <StackPanel>
+        <TextBlock Text="{Binding Localization[Settings.Title]}" FontSize="24"
+                   FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,20" />
+        <Label Content="{Binding Localization[Timer.Duration]}"
+               Target="{Binding ElementName=MinutesInput}" Padding="0,0,0,8" />
+        <ComboBox x:Name="MinutesInput" ItemsSource="{Binding TimerMinuteOptions}" FontSize="18"
+                  SelectedItem="{Binding DraftTimerMinutes, Mode=TwoWay}"
+                  AutomationProperties.Name="{Binding Localization[Timer.Duration]}" />
+        <TextBlock Text="{Binding Localization[Timer.DurationHelp]}"
+                   TextWrapping="Wrap" Margin="0,8,0,24" />
+        <Button Content="{Binding Localization[Lists.Back]}" Command="{Binding SaveSettingsCommand}"
+                IsEnabled="{Binding CanSaveTimerSettings}" Padding="12,8" HorizontalAlignment="Right" />
+    </StackPanel>
+</UserControl>

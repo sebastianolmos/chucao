@@ -23,7 +23,14 @@
                 <Button x:Name="BackButton" Content="{Binding Localization[Lists.Back]}"
                         Command="{Binding BackCommand}" HorizontalAlignment="Left"
                         Padding="12,6" MinHeight="36"
-                        Visibility="{Binding HasSelectedList, Converter={StaticResource BooleanToVisibility}}" />
+                        Visibility="{Binding IsListDetailVisible, Converter={StaticResource BooleanToVisibility}}" />
+                <Button Command="{Binding OpenSettingsCommand}" HorizontalAlignment="Left"
+                        Padding="12,6" MinWidth="48" MinHeight="36"
+                        Visibility="{Binding IsListsVisible, Converter={StaticResource BooleanToVisibility}}"
+                        ToolTip="{Binding Localization[Settings.Title]}"
+                        AutomationProperties.Name="{Binding Localization[Settings.Title]}">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE713;" FontSize="18" />
+                </Button>
                 <TextBlock Grid.Column="1" Text="{Binding AdditionNoticeText}" Margin="12,0"
                            VerticalAlignment="Center" TextWrapping="Wrap"
                            Visibility="{Binding HasAdditionNotice, Converter={StaticResource BooleanToVisibility}}" />
@@ -36,7 +43,9 @@
             <views:ListsView x:Name="ListsContent" Grid.Row="1"
                              Visibility="{Binding IsListsVisible, Converter={StaticResource BooleanToVisibility}}" />
             <views:ListDetailView Grid.Row="1"
-                                  Visibility="{Binding HasSelectedList, Converter={StaticResource BooleanToVisibility}}" />
+                                  Visibility="{Binding IsListDetailVisible, Converter={StaticResource BooleanToVisibility}}" />
+            <views:TimerView Grid.Row="1"
+                             Visibility="{Binding IsTimerVisible, Converter={StaticResource BooleanToVisibility}}" />
         </Grid>
         <Grid Background="#80000000"
               Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibility}}"
@@ -51,6 +60,7 @@
                     <views:CreateConceptView Visibility="{Binding IsCreatingConcept, Converter={StaticResource BooleanToVisibility}}" />
                     <views:AddConceptSetView Visibility="{Binding IsAddingConceptSet, Converter={StaticResource BooleanToVisibility}}" />
                     <views:SelectedConceptView Visibility="{Binding IsShowingSelectedConcept, Converter={StaticResource BooleanToVisibility}}" />
+                    <views:SettingsView Visibility="{Binding IsShowingSettings, Converter={StaticResource BooleanToVisibility}}" />
                 </Grid>
             </Border>
         </Grid>

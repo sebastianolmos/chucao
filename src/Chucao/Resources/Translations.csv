@@ -21,7 +21,18 @@ Concepts.Title,Conceptos,Concepts
 Concepts.SelectRandom,Seleccionar concepto aleatorio,Select random concept
 Concepts.SelectedTitle,Concepto seleccionado,Selected concept
 Concepts.OpenTimer,Abrir temporizador,Open timer
-Concepts.TimerPending,El temporizador estará disponible más adelante.,The timer will be available later.
+Settings.Title,Configuraciones,Settings
+Timer.Title,Temporizador,Timer
+Timer.Duration,Duración del temporizador (minutos),Timer duration (minutes)
+Timer.DurationHelp,De 1 a 59 minutos. Volver guarda los cambios. Escape los descarta.,From 1 to 59 minutes. Back saves changes. Escape discards them.
+Timer.Start,Empezar,Start
+Timer.Pause,Pausar,Pause
+Timer.Resume,Continuar,Resume
+Timer.Restart,Empezar de nuevo,Start again
+Timer.Finished,Tiempo terminado.,Time is up.
+Timer.Remaining,Tiempo restante,Time remaining
+Timer.SettingsReadError,No se pudo leer la duración del temporizador. Se usará 1 minuto y se conservará el archivo de preferencias.,The timer duration could not be read. One minute will be used and the settings file will be preserved.
+Timer.SettingsWriteError,No se pudo guardar la duración. Comprueba el archivo de preferencias y vuelve a intentarlo.,The duration could not be saved. Check the settings file and try again.
 Concepts.RandomError,No se pudo seleccionar y guardar un concepto. Comprueba el archivo y vuelve a intentarlo.,A concept could not be selected and saved. Check the file and try again.
 Concepts.MarkSeen,Visto,Seen
 Concepts.MarkSeenDescription,Marcar como visto,Mark as seen

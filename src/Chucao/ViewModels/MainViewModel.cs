@@ -23,10 +23,19 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private readonly ConceptSelectionService conceptSelection;
     private bool isShowingSelectedConcept;
     private string? selectedConcept;
+    private readonly SettingsService settings;
+    private bool isShowingSettings;
+    private bool isTimerVisible;
+    private bool timerReturnsToConcept;
+    private int configuredTimerMinutes = 1;
+    private int draftTimerMinutes = 1;
 
-    public MainViewModel(ListFileService? listFiles = null, Random? random = null)
+    public MainViewModel(ListFileService? listFiles = null, Random? random = null,
+        SettingsService? settings = null, TimeProvider? timeProvider = null)
     {
         this.listFiles = listFiles ?? new ListFileService();
+        this.settings = settings ?? new SettingsService();
+        Timer = new TimerViewModel(Localization, timeProvider);
         conceptSelection = new ConceptSelectionService(this.listFiles, random);
         Lists = new ObservableCollection<string>();
         OpenListCommand = new RelayCommand(parameter =>
@@ -76,6 +85,17 @@ public sealed class MainViewModel : INotifyPropertyChanged
         });
         ConfirmAddConceptSetCommand = new RelayCommand(_ => ConfirmAddConceptSet());
         SelectRandomConceptCommand = new RelayCommand(_ => SelectRandomConcept());
+        OpenSettingsCommand = new RelayCommand(_ =>
+        {
+            if (!IsListsVisible || IsDialogOpen)
+                return;
+            DraftTimerMinutes = configuredTimerMinutes;
+            SetDialog(creating: false, deleting: false, showingSettings: true);
+        });
+        SaveSettingsCommand = new RelayCommand(_ => SaveTimerSettings());
+        OpenTimerCommand = new RelayCommand(_ => OpenTimer(fromConcept: false));
+        OpenConceptTimerCommand = new RelayCommand(_ => OpenTimer(fromConcept: true));
+        ReturnFromTimerCommand = new RelayCommand(_ => ReturnFromTimer());
         Localization.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(Localization.CurrentLanguage))
@@ -84,6 +104,23 @@ public sealed class MainViewModel : INotifyPropertyChanged
     }
 
     public LocalizationService Localization { get; } = new();
+    public TimerViewModel Timer { get; }
+    public IEnumerable<int> TimerMinuteOptions { get; } = Enumerable.Range(1, 59);
+    public int ConfiguredTimerMinutes => configuredTimerMinutes;
+    public int DraftTimerMinutes
+    {
+        get => draftTimerMinutes;
+        set
+        {
+            draftTimerMinutes = value;
+            Notify(nameof(DraftTimerMinutes));
+            Notify(nameof(CanSaveTimerSettings));
+        }
+    }
+    public bool CanSaveTimerSettings => DraftTimerMinutes is >= 1 and <= 59;
+    public bool IsShowingSettings => isShowingSettings;
+    public bool IsTimerVisible => isTimerVisible;
+    public bool IsListDetailVisible => HasSelectedList && !IsTimerVisible;
     public ObservableCollection<string> Lists { get; }
     public ObservableCollection<ConceptEntry> Concepts { get; } = new();
     public ObservableCollection<ConceptEntry> UnseenConcepts { get; } = new();
@@ -94,15 +131,15 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public bool IsConceptListEmpty => Concepts.Count == 0;
     public string? SelectedList => selectedList;
     public bool HasSelectedList => selectedList is not null;
-    public bool IsListsVisible => !HasSelectedList;
+    public bool IsListsVisible => !HasSelectedList && !IsTimerVisible;
     public bool IsCreatingList => isCreatingList;
     public bool IsDeletingList => isDeletingList;
     public bool IsCreatingConcept => isCreatingConcept;
     public bool IsAddingConceptSet => isAddingConceptSet;
     public bool IsShowingSelectedConcept => isShowingSelectedConcept;
     public string? SelectedConcept => selectedConcept;
-    public bool CanSelectRandomConcept => HasSelectedList && UnseenConcepts.Count > 0 && !IsDialogOpen;
-    public bool IsDialogOpen => isCreatingList || isDeletingList || isCreatingConcept || isAddingConceptSet || isShowingSelectedConcept;
+    public bool CanSelectRandomConcept => HasSelectedList && UnseenConcepts.Count > 0 && !IsDialogOpen && !IsTimerVisible;
+    public bool IsDialogOpen => isCreatingList || isDeletingList || isCreatingConcept || isAddingConceptSet || isShowingSelectedConcept || isShowingSettings;
     public bool IsContentEnabled => !IsDialogOpen;
     public bool CanCreateList => !string.IsNullOrWhiteSpace(DraftListName) && DraftListName.Length <= 30;
     public bool CanAddConcept => !string.IsNullOrWhiteSpace(DraftConceptText) && DraftConceptText.Length <= 30;
@@ -174,8 +211,81 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand AddConceptSetCommand { get; }
     public ICommand ConfirmAddConceptSetCommand { get; }
     public ICommand SelectRandomConceptCommand { get; }
+    public ICommand OpenSettingsCommand { get; }
+    public ICommand SaveSettingsCommand { get; }
+    public ICommand OpenTimerCommand { get; }
+    public ICommand OpenConceptTimerCommand { get; }
+    public ICommand ReturnFromTimerCommand { get; }
 
     public event Action<string, string?>? WarningRequested;
+
+    public void LoadTimerSettings()
+    {
+        try
+        {
+            configuredTimerMinutes = settings.LoadTimerMinutes();
+            Notify(nameof(ConfiguredTimerMinutes));
+        }
+        catch (Exception exception) when (ListFileService.IsFileError(exception))
+        {
+            configuredTimerMinutes = 1;
+            Notify(nameof(ConfiguredTimerMinutes));
+            WarningRequested?.Invoke("Timer.SettingsReadError", null);
+        }
+    }
+
+    private void SaveTimerSettings()
+    {
+        if (!IsShowingSettings || !CanSaveTimerSettings)
+            return;
+        try
+        {
+            settings.SaveTimerMinutes(DraftTimerMinutes);
+            configuredTimerMinutes = DraftTimerMinutes;
+            Notify(nameof(ConfiguredTimerMinutes));
+            SetDialog(creating: false, deleting: false);
+        }
+        catch (Exception exception) when (ListFileService.IsFileError(exception))
+        {
+            WarningRequested?.Invoke("Timer.SettingsWriteError", null);
+        }
+    }
+
+    private void OpenTimer(bool fromConcept)
+    {
+        if (IsTimerVisible || (fromConcept && !IsShowingSelectedConcept)
+            || (!fromConcept && (!IsListsVisible || IsDialogOpen)))
+            return;
+        string? concept = fromConcept ? selectedConcept : null;
+        timerReturnsToConcept = fromConcept;
+        SetDialog(creating: false, deleting: false);
+        ClearAdditionNotice();
+        Timer.Prepare(configuredTimerMinutes, concept);
+        SetTimerVisible(true);
+    }
+
+    private void ReturnFromTimer()
+    {
+        if (!IsTimerVisible)
+            return;
+        Timer.Pause();
+        SetTimerVisible(false);
+        if (timerReturnsToConcept)
+        {
+            selectedConcept = Timer.Concept;
+            Notify(nameof(SelectedConcept));
+            SetDialog(creating: false, deleting: false, showingSelectedConcept: true);
+        }
+    }
+
+    private void SetTimerVisible(bool visible)
+    {
+        isTimerVisible = visible;
+        Notify(nameof(IsTimerVisible));
+        Notify(nameof(IsListsVisible));
+        Notify(nameof(IsListDetailVisible));
+        Notify(nameof(CanSelectRandomConcept));
+    }
 
     public void LoadLists()
     {
@@ -216,18 +326,20 @@ public sealed class MainViewModel : INotifyPropertyChanged
         selectedList = name;
         Notify(nameof(SelectedList));
         Notify(nameof(HasSelectedList));
+        Notify(nameof(IsListDetailVisible));
         Notify(nameof(IsListsVisible));
         Notify(nameof(CanSelectRandomConcept));
     }
 
     private void SetDialog(bool creating, bool deleting, bool addingConcept = false, bool addingSet = false,
-        bool showingSelectedConcept = false)
+        bool showingSelectedConcept = false, bool showingSettings = false)
     {
         isCreatingList = creating;
         isDeletingList = deleting;
         isCreatingConcept = addingConcept;
         isAddingConceptSet = addingSet;
         isShowingSelectedConcept = showingSelectedConcept;
+        isShowingSettings = showingSettings;
         if (!showingSelectedConcept)
         {
             selectedConcept = null;
@@ -238,6 +350,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         Notify(nameof(IsCreatingConcept));
         Notify(nameof(IsAddingConceptSet));
         Notify(nameof(IsShowingSelectedConcept));
+        Notify(nameof(IsShowingSettings));
         Notify(nameof(IsDialogOpen));
         Notify(nameof(IsContentEnabled));
         Notify(nameof(CanSelectRandomConcept));

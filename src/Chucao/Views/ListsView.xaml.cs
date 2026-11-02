@@ -10,6 +10,7 @@ public partial class ListsView : UserControl
     public ListsView() => InitializeComponent();
 
     public void FocusAddButton() => AddListButton.Focus();
+    public void FocusTimerButton() => TimerButton.Focus();
 
     private void View_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
