@@ -18,6 +18,11 @@ Lists.DeleteError,No se pudo eliminar el archivo de la lista. La lista se conser
 Common.Cancel,Cancelar,Cancel
 Common.Confirm,Confirmar,Confirm
 Concepts.Title,Conceptos,Concepts
+Concepts.SelectRandom,Seleccionar concepto aleatorio,Select random concept
+Concepts.SelectedTitle,Concepto seleccionado,Selected concept
+Concepts.OpenTimer,Abrir temporizador,Open timer
+Concepts.TimerPending,El temporizador estará disponible más adelante.,The timer will be available later.
+Concepts.RandomError,No se pudo seleccionar y guardar un concepto. Comprueba el archivo y vuelve a intentarlo.,A concept could not be selected and saved. Check the file and try again.
 Concepts.MarkSeen,Visto,Seen
 Concepts.MarkSeenDescription,Marcar como visto,Mark as seen
 Concepts.Delete,Eliminar,Delete

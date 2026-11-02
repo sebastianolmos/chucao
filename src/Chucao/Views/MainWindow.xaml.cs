@@ -56,6 +56,8 @@ public partial class MainWindow : Window
                 {
                     if (dialogPreviousFocus is UIElement { IsVisible: true, IsEnabled: true } element)
                         element.Focus();
+                    else if (viewModel.HasSelectedList)
+                        BackButton.Focus();
                     else
                         ListsContent.FocusAddButton();
                 }));

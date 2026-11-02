@@ -1,0 +1,24 @@
+<UserControl x:Class="Chucao.Views.SelectedConceptView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             IsVisibleChanged="View_IsVisibleChanged">
+    <StackPanel>
+        <TextBlock Text="{Binding Localization[Concepts.SelectedTitle]}" FontSize="20"
+                   TextAlignment="Center" TextWrapping="Wrap" />
+        <TextBlock Text="{Binding SelectedConcept}" FontSize="32" FontWeight="SemiBold"
+                   TextAlignment="Center" TextWrapping="Wrap" Margin="0,24" />
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:Name="ReturnButton" Content="{Binding Localization[Lists.Back]}"
+                    Command="{Binding CancelDialogCommand}" Padding="8" Margin="0,0,4,0" />
+            <Button Grid.Column="1" IsEnabled="False" Padding="8" Margin="4,0,0,0"
+                    ToolTip="{Binding Localization[Concepts.TimerPending]}" ToolTipService.ShowOnDisabled="True">
+                <TextBlock Text="{Binding Localization[Concepts.OpenTimer]}"
+                           TextWrapping="Wrap" TextAlignment="Center" />
+            </Button>
+        </Grid>
+    </StackPanel>
+</UserControl>

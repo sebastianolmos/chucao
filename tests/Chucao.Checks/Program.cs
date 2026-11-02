@@ -182,6 +182,7 @@ try
     ConceptChecks.Run(directory, Check);
     SeenConceptChecks.Run(directory, Check);
     ConceptSetChecks.Run(directory, Check);
+    RandomConceptChecks.Run(directory, Check);
     Console.WriteLine($"{passed} checks passed.");
 }
 finally

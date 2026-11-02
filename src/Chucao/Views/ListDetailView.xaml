@@ -96,8 +96,22 @@
                                TextWrapping="Wrap" TextAlignment="Center" />
                 </Button>
             </Grid>
-            <Button Content="{Binding Localization[Lists.Delete]}" Command="{Binding DeleteListCommand}"
-                    Padding="12,8" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Button Command="{Binding SelectRandomConceptCommand}" IsEnabled="{Binding CanSelectRandomConcept}"
+                        Padding="8" Margin="0,0,4,0" MinHeight="48">
+                    <TextBlock Text="{Binding Localization[Concepts.SelectRandom]}"
+                               TextWrapping="Wrap" TextAlignment="Center" />
+                </Button>
+                <Button Grid.Column="1" Command="{Binding DeleteListCommand}"
+                        Padding="8" Margin="4,0,0,0" MinHeight="48">
+                    <TextBlock Text="{Binding Localization[Lists.Delete]}"
+                               TextWrapping="Wrap" TextAlignment="Center" />
+                </Button>
+            </Grid>
         </StackPanel>
     </Grid>
 </UserControl>

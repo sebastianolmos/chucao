@@ -44,7 +44,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 ## Reglas funcionales y datos
 
 - No repetir conceptos durante la ronda de la lista correspondiente.
-- Antes de implementar las rondas, acordar cuándo un concepto cuenta como utilizado y cómo comienza una nueva ronda.
+- Un concepto cuenta como visto al marcarlo manualmente o seleccionarlo al azar. Una nueva ronda comienza solo al reiniciar explícitamente la lista.
 - Distinguir «ya apareció» de «práctica completada» si el comportamiento acordado requiere ambos estados.
 - Conservar listas y progreso entre ejecuciones.
 - Guardar datos modificables fuera del ejecutable, en una carpeta persistente del usuario.
@@ -55,6 +55,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Acordar la política de duplicados al implementar la importación.
 - Cada concepto nuevo debe tener de 1 a 30 caracteres, no estar vacío y guardarse con `SeenOrder = 0`. Rechazar textos exactamente iguales dentro de la misma lista (comparación sensible a mayúsculas); no eliminar duplicados antiguos automáticamente.
 - Marcar como visto asigna `max(SeenOrder) + 1` y oculta el concepto; el mayor orden positivo identifica el último visto. Reiniciar explícitamente devuelve todos los estados a 0. Eliminar borra solo la fila elegida y no se revierte al reiniciar. Distinguir una lista vacía de una con todos sus conceptos vistos.
+- Sortear solo entre conceptos con estado 0 y guardar el elegido como visto antes de mostrarlo. Volver o cerrar el cuadro no deshace la selección; si no quedan disponibles, desactivar el sorteo sin reiniciar automáticamente.
 - Al agregar conjuntos pegados, aceptar líneas con `-` inicial, quitar solo ese guion y los espacios exteriores, y omitir vacíos, textos de más de 30 caracteres y duplicados exactos (incluidos los vistos y los del mismo bloque). Conservar el orden y guardar los válidos con estado 0 en una sola operación.
 - Tras agregar un concepto o conjunto, mostrar solo la cantidad añadida junto a «Volver» durante 10 segundos, sin ventana de resultado. Cada nueva adición reinicia el plazo y salir de la lista limpia el aviso. Traducir el texto y admitir el conteo 0.
 

@@ -20,10 +20,14 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string draftConceptSet = "";
     private int? additionNoticeCount;
     private readonly ListFileService listFiles;
+    private readonly ConceptSelectionService conceptSelection;
+    private bool isShowingSelectedConcept;
+    private string? selectedConcept;
 
-    public MainViewModel(ListFileService? listFiles = null)
+    public MainViewModel(ListFileService? listFiles = null, Random? random = null)
     {
         this.listFiles = listFiles ?? new ListFileService();
+        conceptSelection = new ConceptSelectionService(this.listFiles, random);
         Lists = new ObservableCollection<string>();
         OpenListCommand = new RelayCommand(parameter =>
         {
@@ -71,6 +75,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
             SetDialog(creating: false, deleting: false, addingSet: true);
         });
         ConfirmAddConceptSetCommand = new RelayCommand(_ => ConfirmAddConceptSet());
+        SelectRandomConceptCommand = new RelayCommand(_ => SelectRandomConcept());
         Localization.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(Localization.CurrentLanguage))
@@ -94,7 +99,10 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public bool IsDeletingList => isDeletingList;
     public bool IsCreatingConcept => isCreatingConcept;
     public bool IsAddingConceptSet => isAddingConceptSet;
-    public bool IsDialogOpen => isCreatingList || isDeletingList || isCreatingConcept || isAddingConceptSet;
+    public bool IsShowingSelectedConcept => isShowingSelectedConcept;
+    public string? SelectedConcept => selectedConcept;
+    public bool CanSelectRandomConcept => HasSelectedList && UnseenConcepts.Count > 0 && !IsDialogOpen;
+    public bool IsDialogOpen => isCreatingList || isDeletingList || isCreatingConcept || isAddingConceptSet || isShowingSelectedConcept;
     public bool IsContentEnabled => !IsDialogOpen;
     public bool CanCreateList => !string.IsNullOrWhiteSpace(DraftListName) && DraftListName.Length <= 30;
     public bool CanAddConcept => !string.IsNullOrWhiteSpace(DraftConceptText) && DraftConceptText.Length <= 30;
@@ -165,6 +173,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand DeleteConceptCommand { get; }
     public ICommand AddConceptSetCommand { get; }
     public ICommand ConfirmAddConceptSetCommand { get; }
+    public ICommand SelectRandomConceptCommand { get; }
 
     public event Action<string, string?>? WarningRequested;
 
@@ -208,20 +217,30 @@ public sealed class MainViewModel : INotifyPropertyChanged
         Notify(nameof(SelectedList));
         Notify(nameof(HasSelectedList));
         Notify(nameof(IsListsVisible));
+        Notify(nameof(CanSelectRandomConcept));
     }
 
-    private void SetDialog(bool creating, bool deleting, bool addingConcept = false, bool addingSet = false)
+    private void SetDialog(bool creating, bool deleting, bool addingConcept = false, bool addingSet = false,
+        bool showingSelectedConcept = false)
     {
         isCreatingList = creating;
         isDeletingList = deleting;
         isCreatingConcept = addingConcept;
         isAddingConceptSet = addingSet;
+        isShowingSelectedConcept = showingSelectedConcept;
+        if (!showingSelectedConcept)
+        {
+            selectedConcept = null;
+            Notify(nameof(SelectedConcept));
+        }
         Notify(nameof(IsCreatingList));
         Notify(nameof(IsDeletingList));
         Notify(nameof(IsCreatingConcept));
         Notify(nameof(IsAddingConceptSet));
+        Notify(nameof(IsShowingSelectedConcept));
         Notify(nameof(IsDialogOpen));
         Notify(nameof(IsContentEnabled));
+        Notify(nameof(CanSelectRandomConcept));
     }
 
     private void ReplaceConcepts(IReadOnlyList<ConceptEntry> concepts)
@@ -238,6 +257,29 @@ public sealed class MainViewModel : INotifyPropertyChanged
         Notify(nameof(HasSeenConcept));
         Notify(nameof(AllConceptsSeen));
         Notify(nameof(IsConceptListEmpty));
+        Notify(nameof(CanSelectRandomConcept));
+    }
+
+    private void SelectRandomConcept()
+    {
+        if (!CanSelectRandomConcept || selectedList is null)
+            return;
+        try
+        {
+            var result = conceptSelection.SelectRandomConcept(selectedList);
+            ReplaceConcepts(result.Concepts);
+            if (result.SelectedConcept is null)
+                return;
+
+            ClearAdditionNotice();
+            selectedConcept = result.SelectedConcept;
+            Notify(nameof(SelectedConcept));
+            SetDialog(creating: false, deleting: false, showingSelectedConcept: true);
+        }
+        catch (Exception exception) when (ListFileService.IsFileError(exception))
+        {
+            WarningRequested?.Invoke("Concepts.RandomError", null);
+        }
     }
 
     private void MarkConceptAsSeen(ConceptEntry concept)
