@@ -18,6 +18,15 @@ Lists.DeleteError,No se pudo eliminar el archivo de la lista. La lista se conser
 Common.Cancel,Cancelar,Cancel
 Common.Confirm,Confirmar,Confirm
 Concepts.Title,Conceptos,Concepts
+Concepts.MarkSeen,Visto,Seen
+Concepts.MarkSeenDescription,Marcar como visto,Mark as seen
+Concepts.Delete,Eliminar,Delete
+Concepts.LastSeen,Último concepto visto:,Last concept seen:
+Concepts.NoneSeen,Aún no hay conceptos vistos.,No concepts have been seen yet.
+Concepts.AllSeen,Todos los conceptos han sido vistos. Reinicia la lista para volver a mostrarlos.,All concepts have been seen. Reset the list to show them again.
+Concepts.Empty,Esta lista todavía no tiene conceptos.,This list does not have any concepts yet.
+Concepts.MarkSeenError,No se pudo marcar el concepto como visto. Se conservó el progreso anterior. Comprueba el archivo y vuelve a intentarlo.,The concept could not be marked as seen. Previous progress was preserved. Check the file and try again.
+Concepts.DeleteError,No se pudo eliminar el concepto. La lista no se modificó. Comprueba el archivo y vuelve a intentarlo.,The concept could not be deleted. The list was not changed. Check the file and try again.
 Concepts.Add,Agregar concepto,Add concept
 Concepts.AddSet,Agregar conjunto,Add set
 Concepts.AddSetPending,Esta función estará disponible más adelante.,This feature will be available later.

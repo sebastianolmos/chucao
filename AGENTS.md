@@ -54,6 +54,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Manejar listas vacías, líneas vacías y archivos inválidos con mensajes comprensibles.
 - Acordar la política de duplicados al implementar la importación.
 - Cada concepto nuevo debe tener de 1 a 30 caracteres, no estar vacío y guardarse con `SeenOrder = 0`. Rechazar textos exactamente iguales dentro de la misma lista (comparación sensible a mayúsculas); no eliminar duplicados antiguos automáticamente.
+- Marcar como visto asigna `max(SeenOrder) + 1` y oculta el concepto; el mayor orden positivo identifica el último visto. Reiniciar explícitamente devuelve todos los estados a 0. Eliminar borra solo la fila elegida y no se revierte al reiniciar. Distinguir una lista vacía de una con todos sus conceptos vistos.
 
 ## Comprobación
 

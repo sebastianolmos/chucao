@@ -180,6 +180,7 @@ try
     Check(blocked.Lists.Count == 0 && blocked.IsCreatingList && blocked.DraftListName == "Test"
         && lastWarning == "Lists.CreateError", "A failed creation preserves the draft and does not add an unsaved card");
     ConceptChecks.Run(directory, Check);
+    SeenConceptChecks.Run(directory, Check);
     Console.WriteLine($"{passed} checks passed.");
 }
 finally

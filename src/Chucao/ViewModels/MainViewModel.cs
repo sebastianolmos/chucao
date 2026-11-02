@@ -48,11 +48,27 @@ public sealed class MainViewModel : INotifyPropertyChanged
         });
         ConfirmAddConceptCommand = new RelayCommand(_ => ConfirmAddConcept());
         ResetListCommand = new RelayCommand(_ => ResetSelectedList());
+        MarkConceptAsSeenCommand = new RelayCommand(parameter =>
+        {
+            if (parameter is ConceptEntry concept)
+                MarkConceptAsSeen(concept);
+        });
+        DeleteConceptCommand = new RelayCommand(parameter =>
+        {
+            if (parameter is ConceptEntry concept)
+                DeleteConcept(concept);
+        });
     }
 
     public LocalizationService Localization { get; } = new();
     public ObservableCollection<string> Lists { get; }
     public ObservableCollection<ConceptEntry> Concepts { get; } = new();
+    public ObservableCollection<ConceptEntry> UnseenConcepts { get; } = new();
+    public string? LastSeenConcept => Concepts.Where(entry => entry.SeenOrder > 0)
+        .MaxBy(entry => entry.SeenOrder)?.Concept;
+    public bool HasSeenConcept => LastSeenConcept is not null;
+    public bool AllConceptsSeen => Concepts.Count > 0 && UnseenConcepts.Count == 0;
+    public bool IsConceptListEmpty => Concepts.Count == 0;
     public string? SelectedList => selectedList;
     public bool HasSelectedList => selectedList is not null;
     public bool IsListsVisible => !HasSelectedList;
@@ -100,6 +116,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand AddConceptCommand { get; }
     public ICommand ConfirmAddConceptCommand { get; }
     public ICommand ResetListCommand { get; }
+    public ICommand MarkConceptAsSeenCommand { get; }
+    public ICommand DeleteConceptCommand { get; }
 
     public event Action<string, string?>? WarningRequested;
 
@@ -136,7 +154,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         }
         else
         {
-            Concepts.Clear();
+            ReplaceConcepts(Array.Empty<ConceptEntry>());
         }
         selectedList = name;
         Notify(nameof(SelectedList));
@@ -159,8 +177,45 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private void ReplaceConcepts(IReadOnlyList<ConceptEntry> concepts)
     {
         Concepts.Clear();
+        UnseenConcepts.Clear();
         foreach (var entry in concepts)
+        {
             Concepts.Add(entry);
+            if (entry.SeenOrder == 0)
+                UnseenConcepts.Add(entry);
+        }
+        Notify(nameof(LastSeenConcept));
+        Notify(nameof(HasSeenConcept));
+        Notify(nameof(AllConceptsSeen));
+        Notify(nameof(IsConceptListEmpty));
+    }
+
+    private void MarkConceptAsSeen(ConceptEntry concept)
+    {
+        if (selectedList is null || IsDialogOpen || !UnseenConcepts.Contains(concept))
+            return;
+        try
+        {
+            ReplaceConcepts(listFiles.MarkConceptAsSeen(selectedList, concept));
+        }
+        catch (Exception exception) when (ListFileService.IsFileError(exception))
+        {
+            WarningRequested?.Invoke("Concepts.MarkSeenError", null);
+        }
+    }
+
+    private void DeleteConcept(ConceptEntry concept)
+    {
+        if (selectedList is null || IsDialogOpen || !UnseenConcepts.Contains(concept))
+            return;
+        try
+        {
+            ReplaceConcepts(listFiles.DeleteConcept(selectedList, concept));
+        }
+        catch (Exception exception) when (ListFileService.IsFileError(exception))
+        {
+            WarningRequested?.Invoke("Concepts.DeleteError", null);
+        }
     }
 
     private void ConfirmAddConcept()

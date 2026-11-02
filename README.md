@@ -17,9 +17,11 @@ Las listas se descubren al iniciar desde `%LocalAppData%\Chucao\Lists`, sin list
 
 Cada CSV utiliza exclusivamente las columnas `Concept,SeenOrder`. Una lista nueva contiene solo la cabecera. `SeenOrder` admite 0 para conceptos no vistos y enteros positivos sin repetir para el orden de aparición. Los CSV no reconocidos, ilegibles o inválidos se omiten con un aviso y permanecen sin cambios; las listas válidas se cargan igualmente.
 
-El detalle muestra los conceptos en un contenedor con desplazamiento. «Agregar concepto» abre un formulario con un límite de 30 caracteres y guarda el texto con `SeenOrder = 0`. Se rechazan textos vacíos o compuestos solo por espacios y conceptos exactamente iguales dentro de la misma lista, distinguiendo mayúsculas de minúsculas. Los textos ingresados se conservan tal como se escriben. Los conceptos existentes no se borran ni se deduplican automáticamente.
+El detalle muestra los conceptos no vistos (`SeenOrder = 0`) en un contenedor con desplazamiento. Cada fila tiene dos botones alineados a la derecha: «Visto» y «Eliminar». Marcar como visto asigna el siguiente número después del mayor `SeenOrder` y oculta la fila sin borrarla del CSV. Eliminar borra permanentemente solo esa fila, que no reaparece al reiniciar. Debajo del nombre de la lista se muestra el concepto con el mayor orden positivo como último visto, o un aviso si todavía no hay ninguno.
 
-Debajo del contenedor aparecen en una fila «Agregar concepto» a la izquierda, «Agregar conjunto» en el centro (deshabilitado por ahora) y «Reiniciar lista» a la derecha. «Eliminar lista» queda debajo. Reiniciar guarda `SeenOrder = 0` para todos los conceptos de la lista actual sin modificar sus textos ni su orden. Los cambios se escriben primero en un archivo temporal y reemplazan el CSV solo al completar la escritura. Si falla el guardado, la interfaz mantiene sus datos anteriores y muestra un aviso traducido. Todavía no hay sorteo ni práctica.
+«Agregar concepto» abre un formulario con un límite de 30 caracteres y guarda el texto con `SeenOrder = 0`. Se rechazan textos vacíos o compuestos solo por espacios y conceptos exactamente iguales dentro de la misma lista, incluyendo los vistos, distinguiendo mayúsculas de minúsculas. Los textos ingresados se conservan tal como se escriben. Los conceptos existentes no se borran ni se deduplican automáticamente.
+
+Debajo del contenedor aparecen en una fila «Agregar concepto» a la izquierda, «Agregar conjunto» en el centro (deshabilitado por ahora) y «Reiniciar lista» a la derecha. «Eliminar lista» queda debajo. Reiniciar guarda `SeenOrder = 0` para todos los conceptos de la lista actual sin modificar sus textos ni su orden, vuelve a mostrarlos y borra la indicación del último visto. Cuando todos están vistos, el contenedor muestra un mensaje para reiniciar explícitamente; una lista sin conceptos muestra un mensaje distinto. Los cambios se escriben primero en un archivo temporal y reemplazan el CSV solo al completar la escritura. Si falla el guardado, la interfaz mantiene sus datos anteriores y muestra un aviso traducido. Todavía no hay sorteo aleatorio ni temporizador.
 
 Los nombres visibles admiten caracteres como `/`, `:` o `?`: el archivo usa `list-` seguido del nombre codificado como bytes UTF-8 en hexadecimal y la extensión `.csv`. Esa codificación reversible permite recuperar el nombre sin columnas adicionales ni un catálogo. No se debe renombrar manualmente el archivo. Se recortan los espacios exteriores y se rechazan nombres repetidos sin distinguir mayúsculas de minúsculas; nunca se sobrescribe una lista existente. Para respaldar las listas, copiar la carpeta completa.
 
@@ -36,7 +38,7 @@ La aplicación arranca desde `Views/MainWindow.xaml`. El formulario de conceptos
 ## Funciones previstas
 
 - Ampliar la administración de listas, incluyendo la edición de nombres.
-- Editar y eliminar conceptos existentes y agregar conjuntos.
+- Editar conceptos existentes y agregar conjuntos.
 - Importar listas desde archivos TXT, con un concepto por línea.
 - Seleccionar conceptos aleatoriamente sin repetición dentro de cada ronda.
 - Incorporar el avance de las rondas y el guardado del progreso durante la práctica.
@@ -79,7 +81,7 @@ Usan archivos temporales y no modifican las preferencias ni las listas del usuar
 
 Para revisar manualmente las listas en ambos idiomas: comprobar las dos columnas con nombres largos y crear suficientes para activar el desplazamiento; escribir y pegar nombres de más de 30 caracteres; comprobar que no se acepten nombres vacíos ni repetidos; cancelar y confirmar la creación y eliminación; volver desde el detalle; cambiar el idioma sin perder las listas ni la vista actual; y cerrar/abrir para comprobar la persistencia. La barra de la ventana sigue mostrando «Chucao» y el título interior se oculta en el detalle.
 
-Para los conceptos: agregar, cancelar y rechazar duplicados exactos; comprobar el límite al escribir y pegar; cerrar/abrir para verificar texto y estado 0; reiniciar una lista con estados positivos y comprobar que se conservan los textos; repetir en ambos idiomas y con teclado. Se añadieron comprobaciones de persistencia en `tests/Chucao.Checks/ConceptChecks.cs`; en esta tarea no se ejecutaron ni compilación ni pruebas por petición del usuario.
+Para los conceptos: agregar, cancelar y rechazar duplicados exactos; comprobar el límite al escribir y pegar; marcar varios como vistos y comprobar la desaparición de sus filas y el último visto; cerrar/abrir para verificar el progreso; completar una lista y comprobar el aviso; reiniciarla y verificar que reaparecen; eliminar un concepto y comprobar que no reaparece al reiniciar. Repetir en ambos idiomas y con teclado. Las comprobaciones de persistencia están en `tests/Chucao.Checks/ConceptChecks.cs` y `SeenConceptChecks.cs`; incluyen progreso, eliminación, reinicio, listas vacías/completas y fallos de escritura. En esta tarea no se ejecutaron ni compilación ni pruebas por petición del usuario.
 
 ## Distribución
 
@@ -106,6 +108,8 @@ The project is at an early stage. Planned features include:
 The initial window already supports switching between English and Spanish with the top-right ES/EN button. It starts in English without a saved preference and remembers changes in `%LocalAppData%\Chucao\settings.csv`. Translations are embedded from `src/Chucao/Resources/Translations.csv`.
 
 The main view displays scrollable list cards in two columns and a final + button. Users can create lists with nonblank names up to 30 characters, open a detail view, return, and delete with confirmation. Lists persist as individual CSVs in `%LocalAppData%\Chucao\Lists`, with only the `Concept,SeenOrder` columns. Internal filenames encode display names as UTF-8 hexadecimal, allowing names containing Windows-reserved characters without an additional catalog. Duplicate list names are rejected case-insensitively. Invalid files are reported and left unchanged. The detail view now displays concepts and allows adding nonblank texts up to 30 characters with state zero. Exact duplicate concepts within a list are rejected case-sensitively. Reset list saves zero for every concept without changing text or row order. Add set is disabled pending implementation. Changes replace the CSV only after a complete temporary file has been written.
+
+Only unseen concepts are displayed. Each row has right-aligned Seen and Delete buttons. Marking assigns the next order, hides the row and updates the last seen concept below the list title. Deleting permanently removes the selected row. A completed list displays a reset message; an empty list displays a different message. Reset restores seen concepts and clears the last seen text. All progress survives reopening the application.
 
 The application uses C#, .NET 10, WPF, and CsvHelper for CSV storage.
 

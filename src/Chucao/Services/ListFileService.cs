@@ -113,6 +113,35 @@ public sealed class ListFileService
         return concepts;
     }
 
+    public IReadOnlyList<ConceptEntry> MarkConceptAsSeen(string listName, ConceptEntry concept)
+    {
+        var concepts = LoadConcepts(listName).ToList();
+        int index = concepts.FindIndex(entry => entry == concept);
+        if (index < 0)
+            throw new IOException("The concept has changed or no longer exists.");
+        if (concepts[index].SeenOrder > 0)
+            return concepts;
+
+        int lastOrder = concepts.Max(entry => entry.SeenOrder);
+        if (lastOrder == int.MaxValue)
+            throw new InvalidDataException("The selection order limit has been reached.");
+        concepts[index] = concepts[index] with { SeenOrder = lastOrder + 1 };
+        SaveConcepts(listName, concepts);
+        return concepts;
+    }
+
+    public IReadOnlyList<ConceptEntry> DeleteConcept(string listName, ConceptEntry concept)
+    {
+        var concepts = LoadConcepts(listName).ToList();
+        int index = concepts.FindIndex(entry => entry == concept);
+        if (index < 0)
+            throw new IOException("The concept has changed or no longer exists.");
+        // Remove only the chosen row, including in legacy files with duplicate text.
+        concepts.RemoveAt(index);
+        SaveConcepts(listName, concepts);
+        return concepts;
+    }
+
     private void SaveConcepts(string listName, IReadOnlyList<ConceptEntry> concepts)
     {
         string path = GetFilePath(listName);
