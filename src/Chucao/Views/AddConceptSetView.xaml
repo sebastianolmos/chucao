@@ -1,0 +1,38 @@
+<UserControl x:Class="Chucao.Views.AddConceptSetView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             IsVisibleChanged="View_IsVisibleChanged">
+    <StackPanel>
+        <TextBlock Text="{Binding Localization[Concepts.AddSet]}" FontSize="22"
+                   FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,12" />
+        <TextBlock Text="{Binding Localization[Concepts.SetInstructions]}"
+                   TextWrapping="Wrap" Margin="0,0,0,12" />
+        <Label Content="{Binding Localization[Concepts.SetInput]}"
+               Target="{Binding ElementName=ConceptSetInput}" Padding="0,0,0,6" />
+        <TextBox x:Name="ConceptSetInput" Height="180" Padding="8" FontSize="16"
+                 AcceptsReturn="True" TextWrapping="Wrap"
+                 VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
+                 Text="{Binding DraftConceptSet, UpdateSourceTrigger=PropertyChanged}"
+                 AutomationProperties.Name="{Binding Localization[Concepts.SetInput]}" />
+        <TextBlock Text="{Binding ConceptSetSummary}" TextWrapping="Wrap" FontSize="12">
+            <TextBlock.Style>
+                <Style TargetType="TextBlock">
+                    <Setter Property="Visibility" Value="Collapsed" />
+                    <Setter Property="Margin" Value="0,12,0,0" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding HasConceptSetSummary}" Value="True">
+                            <Setter Property="Visibility" Value="Visible" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </TextBlock.Style>
+        </TextBlock>
+        <WrapPanel HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button Content="{Binding Localization[Common.Cancel]}" Padding="12,8"
+                    Margin="0,0,8,0" Command="{Binding CancelDialogCommand}" />
+            <Button Content="{Binding Localization[Common.Confirm]}" Padding="12,8"
+                    IsDefault="True" IsEnabled="{Binding CanAddConceptSet}"
+                    Command="{Binding ConfirmAddConceptSetCommand}" />
+        </WrapPanel>
+    </StackPanel>
+</UserControl>

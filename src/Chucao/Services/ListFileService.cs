@@ -105,6 +105,32 @@ public sealed class ListFileService
         return concepts;
     }
 
+    public (IReadOnlyList<ConceptEntry> Concepts, int Added, int Duplicates) AddConcepts(
+        string listName, IReadOnlyList<string> candidates)
+    {
+        var concepts = LoadConcepts(listName).ToList();
+        var knownTexts = new HashSet<string>(concepts.Select(entry => entry.Concept), StringComparer.Ordinal);
+        int added = 0;
+        int duplicates = 0;
+        foreach (string candidate in candidates)
+        {
+            if (string.IsNullOrWhiteSpace(candidate) || candidate.Length > 30)
+                throw new ArgumentException("Concepts must contain between 1 and 30 characters.", nameof(candidates));
+            if (!knownTexts.Add(candidate))
+            {
+                duplicates++;
+                continue;
+            }
+            concepts.Add(new ConceptEntry(candidate, 0));
+            added++;
+        }
+
+        // Write the accepted set once; duplicates alone must not rewrite existing progress.
+        if (added > 0)
+            SaveConcepts(listName, concepts);
+        return (concepts, added, duplicates);
+    }
+
     public IReadOnlyList<ConceptEntry> ResetList(string listName)
     {
         var concepts = LoadConcepts(listName)

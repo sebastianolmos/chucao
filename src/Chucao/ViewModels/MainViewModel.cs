@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Windows.Input;
 using Chucao.Services;
 using Chucao.Models;
@@ -14,6 +16,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private bool isDeletingList;
     private bool isCreatingConcept;
     private string draftConceptText = "";
+    private bool isAddingConceptSet;
+    private string draftConceptSet = "";
+    private (int Added, int Duplicates, int TooLong, int Invalid, int Empty)? conceptSetSummary;
     private readonly ListFileService listFiles;
 
     public MainViewModel(ListFileService? listFiles = null)
@@ -58,6 +63,20 @@ public sealed class MainViewModel : INotifyPropertyChanged
             if (parameter is ConceptEntry concept)
                 DeleteConcept(concept);
         });
+        AddConceptSetCommand = new RelayCommand(_ =>
+        {
+            if (!HasSelectedList || IsDialogOpen)
+                return;
+            DraftConceptSet = "";
+            SetConceptSetSummary(null);
+            SetDialog(creating: false, deleting: false, addingSet: true);
+        });
+        ConfirmAddConceptSetCommand = new RelayCommand(_ => ConfirmAddConceptSet());
+        Localization.PropertyChanged += (_, args) =>
+        {
+            if (args.PropertyName == nameof(Localization.CurrentLanguage))
+                Notify(nameof(ConceptSetSummary));
+        };
     }
 
     public LocalizationService Localization { get; } = new();
@@ -75,10 +94,38 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public bool IsCreatingList => isCreatingList;
     public bool IsDeletingList => isDeletingList;
     public bool IsCreatingConcept => isCreatingConcept;
-    public bool IsDialogOpen => isCreatingList || isDeletingList || isCreatingConcept;
+    public bool IsAddingConceptSet => isAddingConceptSet;
+    public bool IsDialogOpen => isCreatingList || isDeletingList || isCreatingConcept || isAddingConceptSet;
     public bool IsContentEnabled => !IsDialogOpen;
     public bool CanCreateList => !string.IsNullOrWhiteSpace(DraftListName) && DraftListName.Length <= 30;
     public bool CanAddConcept => !string.IsNullOrWhiteSpace(DraftConceptText) && DraftConceptText.Length <= 30;
+    public bool CanAddConceptSet => !string.IsNullOrWhiteSpace(DraftConceptSet);
+    public bool HasConceptSetSummary => conceptSetSummary.HasValue;
+    public string ConceptSetSummary
+    {
+        get
+        {
+            if (conceptSetSummary is not { } summary)
+                return "";
+            string text = string.Format(CultureInfo.CurrentCulture, Localization["Concepts.SetSummary"],
+                summary.Added, summary.Duplicates, summary.TooLong, summary.Invalid, summary.Empty);
+            return summary.Added == 0 ? Localization["Concepts.SetNoValid"] + Environment.NewLine + text : text;
+        }
+    }
+
+    public string DraftConceptSet
+    {
+        get => draftConceptSet;
+        set
+        {
+            if (draftConceptSet == value)
+                return;
+            draftConceptSet = value;
+            SetConceptSetSummary(null);
+            Notify(nameof(DraftConceptSet));
+            Notify(nameof(CanAddConceptSet));
+        }
+    }
 
     public string DraftConceptText
     {
@@ -118,8 +165,11 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ResetListCommand { get; }
     public ICommand MarkConceptAsSeenCommand { get; }
     public ICommand DeleteConceptCommand { get; }
+    public ICommand AddConceptSetCommand { get; }
+    public ICommand ConfirmAddConceptSetCommand { get; }
 
     public event Action<string, string?>? WarningRequested;
+    public event Action<string>? InformationRequested;
 
     public void LoadLists()
     {
@@ -162,14 +212,16 @@ public sealed class MainViewModel : INotifyPropertyChanged
         Notify(nameof(IsListsVisible));
     }
 
-    private void SetDialog(bool creating, bool deleting, bool addingConcept = false)
+    private void SetDialog(bool creating, bool deleting, bool addingConcept = false, bool addingSet = false)
     {
         isCreatingList = creating;
         isDeletingList = deleting;
         isCreatingConcept = addingConcept;
+        isAddingConceptSet = addingSet;
         Notify(nameof(IsCreatingList));
         Notify(nameof(IsDeletingList));
         Notify(nameof(IsCreatingConcept));
+        Notify(nameof(IsAddingConceptSet));
         Notify(nameof(IsDialogOpen));
         Notify(nameof(IsContentEnabled));
     }
@@ -237,6 +289,66 @@ public sealed class MainViewModel : INotifyPropertyChanged
             return;
         }
         SetDialog(creating: false, deleting: false);
+    }
+
+    private void SetConceptSetSummary((int Added, int Duplicates, int TooLong, int Invalid, int Empty)? summary)
+    {
+        conceptSetSummary = summary;
+        Notify(nameof(ConceptSetSummary));
+        Notify(nameof(HasConceptSetSummary));
+    }
+
+    private void ConfirmAddConceptSet()
+    {
+        if (!IsAddingConceptSet || !CanAddConceptSet || selectedList is null)
+            return;
+
+        SetConceptSetSummary(null);
+        var candidates = new List<string>();
+        int tooLong = 0;
+        int invalid = 0;
+        int empty = 0;
+        using var reader = new StringReader(DraftConceptSet);
+        while (reader.ReadLine() is { } line)
+        {
+            string trimmed = line.Trim();
+            if (trimmed.Length == 0)
+                empty++;
+            else if (!trimmed.StartsWith('-'))
+                invalid++;
+            else
+            {
+                // Remove only the first ASCII dash; preserve internal dashes and casing.
+                string concept = trimmed[1..].Trim();
+                if (concept.Length == 0)
+                    empty++;
+                else if (concept.Length > 30)
+                    tooLong++;
+                else
+                    candidates.Add(concept);
+            }
+        }
+
+        if (candidates.Count == 0)
+        {
+            SetConceptSetSummary((0, 0, tooLong, invalid, empty));
+            return;
+        }
+        try
+        {
+            var result = listFiles.AddConcepts(selectedList, candidates);
+            ReplaceConcepts(result.Concepts);
+            SetConceptSetSummary((result.Added, result.Duplicates, tooLong, invalid, empty));
+            if (result.Added > 0)
+            {
+                SetDialog(creating: false, deleting: false);
+                InformationRequested?.Invoke(ConceptSetSummary);
+            }
+        }
+        catch (Exception exception) when (ListFileService.IsFileError(exception))
+        {
+            WarningRequested?.Invoke("Concepts.SetSaveError", null);
+        }
     }
 
     private void ResetSelectedList()

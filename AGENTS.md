@@ -55,6 +55,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Acordar la política de duplicados al implementar la importación.
 - Cada concepto nuevo debe tener de 1 a 30 caracteres, no estar vacío y guardarse con `SeenOrder = 0`. Rechazar textos exactamente iguales dentro de la misma lista (comparación sensible a mayúsculas); no eliminar duplicados antiguos automáticamente.
 - Marcar como visto asigna `max(SeenOrder) + 1` y oculta el concepto; el mayor orden positivo identifica el último visto. Reiniciar explícitamente devuelve todos los estados a 0. Eliminar borra solo la fila elegida y no se revierte al reiniciar. Distinguir una lista vacía de una con todos sus conceptos vistos.
+- Al agregar conjuntos pegados, aceptar líneas con `-` inicial, quitar solo ese guion y los espacios exteriores, y omitir vacíos, textos de más de 30 caracteres y duplicados exactos (incluidos los vistos y los del mismo bloque). Conservar el orden y guardar los válidos con estado 0 en una sola operación; mostrar un resumen traducido.
 
 ## Comprobación
 

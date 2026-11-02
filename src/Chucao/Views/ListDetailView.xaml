@@ -86,8 +86,7 @@
                     <TextBlock Text="{Binding Localization[Concepts.Add]}"
                                TextWrapping="Wrap" TextAlignment="Center" />
                 </Button>
-                <Button Grid.Column="1" IsEnabled="False" Padding="8" Margin="4,0"
-                        ToolTip="{Binding Localization[Concepts.AddSetPending]}">
+                <Button Grid.Column="1" Command="{Binding AddConceptSetCommand}" Padding="8" Margin="4,0">
                     <TextBlock Text="{Binding Localization[Concepts.AddSet]}"
                                TextWrapping="Wrap" TextAlignment="Center" />
                 </Button>

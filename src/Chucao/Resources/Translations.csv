@@ -29,7 +29,11 @@ Concepts.MarkSeenError,No se pudo marcar el concepto como visto. Se conservó el
 Concepts.DeleteError,No se pudo eliminar el concepto. La lista no se modificó. Comprueba el archivo y vuelve a intentarlo.,The concept could not be deleted. The list was not changed. Check the file and try again.
 Concepts.Add,Agregar concepto,Add concept
 Concepts.AddSet,Agregar conjunto,Add set
-Concepts.AddSetPending,Esta función estará disponible más adelante.,This feature will be available later.
+Concepts.SetInstructions,Pega un concepto por línea comenzando con - (guion). Se omiten los vacíos y los que superen 30 caracteres o estén repetidos.,Paste one concept per line starting with - (dash). Blank concepts and those longer than 30 characters or already present are skipped.
+Concepts.SetInput,Conceptos para agregar,Concepts to add
+Concepts.SetSummary,Agregados: {0}. Omitidos: {1} duplicados; {2} demasiado largos; {3} sin guion; {4} vacíos.,Added: {0}. Skipped: {1} duplicates; {2} too long; {3} without a dash; {4} empty.
+Concepts.SetNoValid,No se agregó ningún concepto. Corrige el contenido e inténtalo de nuevo.,No concepts were added. Edit the text and try again.
+Concepts.SetSaveError,No se pudo guardar el conjunto. No se agregó ningún concepto. El texto pegado se conservó para volver a intentarlo.,The set could not be saved. No concepts were added. The pasted text was kept so you can try again.
 Concepts.Name,Nombre del concepto,Concept name
 Concepts.NameLimit,Máximo 30 caracteres.,Maximum 30 characters.
 Concepts.Duplicate,Este concepto exacto ya existe en esta lista. Escribe otro texto.,This exact concept already exists in this list. Enter different text.

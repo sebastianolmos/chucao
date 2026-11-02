@@ -21,6 +21,7 @@ public partial class MainWindow : Window
         DataContext = viewModel;
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
         viewModel.WarningRequested += ShowListWarning;
+        viewModel.InformationRequested += ShowInformation;
         Loaded += (_, _) => viewModel.LoadLists();
         try
         {
@@ -96,4 +97,7 @@ public partial class MainWindow : Window
     private void ShowListWarning(string key, string? details) => MessageBox.Show(
         this, viewModel.Localization[key] + (details is null ? "" : Environment.NewLine + details),
         viewModel.Localization["Window.Title"], MessageBoxButton.OK, MessageBoxImage.Warning);
+
+    private void ShowInformation(string message) => MessageBox.Show(
+        this, message, viewModel.Localization["Window.Title"], MessageBoxButton.OK, MessageBoxImage.Information);
 }
