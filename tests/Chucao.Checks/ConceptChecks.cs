@@ -37,10 +37,14 @@ internal static class ConceptChecks
             "A new concept is displayed with selection order zero");
         check(files.LoadConcepts("Conceptos").Single().Concept == text,
             "Quoted concepts with accents and commas survive CSV saving");
+        check(main.AdditionNoticeCount == 1 && main.AdditionNoticeText == main.Localization["Concepts.AddedOne"],
+            "Adding a single concept publishes the singular count notice");
+        main.ClearAdditionNotice();
         string savedCsv = File.ReadAllText(csvPath);
         Add(text);
         check(main.IsCreatingConcept && main.DraftConceptText == text && warning == "Concepts.Duplicate"
-            && File.ReadAllText(csvPath) == savedCsv, "An exact duplicate is rejected without changing the CSV or losing the draft");
+            && File.ReadAllText(csvPath) == savedCsv && !main.HasAdditionNotice,
+            "An exact duplicate is rejected without changing the CSV, losing the draft or announcing success");
         main.CancelDialogCommand.Execute(null);
         Add(text.ToLowerInvariant());
         check(main.Concepts.Count == 2, "Duplicate matching uses exact case-sensitive text");

@@ -18,7 +18,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string draftConceptText = "";
     private bool isAddingConceptSet;
     private string draftConceptSet = "";
-    private (int Added, int Duplicates, int TooLong, int Invalid, int Empty)? conceptSetSummary;
+    private int? additionNoticeCount;
     private readonly ListFileService listFiles;
 
     public MainViewModel(ListFileService? listFiles = null)
@@ -68,14 +68,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
             if (!HasSelectedList || IsDialogOpen)
                 return;
             DraftConceptSet = "";
-            SetConceptSetSummary(null);
             SetDialog(creating: false, deleting: false, addingSet: true);
         });
         ConfirmAddConceptSetCommand = new RelayCommand(_ => ConfirmAddConceptSet());
         Localization.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(Localization.CurrentLanguage))
-                Notify(nameof(ConceptSetSummary));
+                Notify(nameof(AdditionNoticeText));
         };
     }
 
@@ -100,16 +99,16 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public bool CanCreateList => !string.IsNullOrWhiteSpace(DraftListName) && DraftListName.Length <= 30;
     public bool CanAddConcept => !string.IsNullOrWhiteSpace(DraftConceptText) && DraftConceptText.Length <= 30;
     public bool CanAddConceptSet => !string.IsNullOrWhiteSpace(DraftConceptSet);
-    public bool HasConceptSetSummary => conceptSetSummary.HasValue;
-    public string ConceptSetSummary
+    public int? AdditionNoticeCount => additionNoticeCount;
+    public bool HasAdditionNotice => additionNoticeCount.HasValue;
+    public string AdditionNoticeText
     {
         get
         {
-            if (conceptSetSummary is not { } summary)
+            if (additionNoticeCount is not { } count)
                 return "";
-            string text = string.Format(CultureInfo.CurrentCulture, Localization["Concepts.SetSummary"],
-                summary.Added, summary.Duplicates, summary.TooLong, summary.Invalid, summary.Empty);
-            return summary.Added == 0 ? Localization["Concepts.SetNoValid"] + Environment.NewLine + text : text;
+            return count == 1 ? Localization["Concepts.AddedOne"]
+                : string.Format(CultureInfo.CurrentCulture, Localization["Concepts.AddedMany"], count);
         }
     }
 
@@ -121,7 +120,6 @@ public sealed class MainViewModel : INotifyPropertyChanged
             if (draftConceptSet == value)
                 return;
             draftConceptSet = value;
-            SetConceptSetSummary(null);
             Notify(nameof(DraftConceptSet));
             Notify(nameof(CanAddConceptSet));
         }
@@ -169,7 +167,6 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand ConfirmAddConceptSetCommand { get; }
 
     public event Action<string, string?>? WarningRequested;
-    public event Action<string>? InformationRequested;
 
     public void LoadLists()
     {
@@ -206,6 +203,7 @@ public sealed class MainViewModel : INotifyPropertyChanged
         {
             ReplaceConcepts(Array.Empty<ConceptEntry>());
         }
+        ClearAdditionNotice();
         selectedList = name;
         Notify(nameof(SelectedList));
         Notify(nameof(HasSelectedList));
@@ -289,13 +287,27 @@ public sealed class MainViewModel : INotifyPropertyChanged
             return;
         }
         SetDialog(creating: false, deleting: false);
+        ShowAdditionNotice(1);
     }
 
-    private void SetConceptSetSummary((int Added, int Duplicates, int TooLong, int Invalid, int Empty)? summary)
+    public void ClearAdditionNotice()
     {
-        conceptSetSummary = summary;
-        Notify(nameof(ConceptSetSummary));
-        Notify(nameof(HasConceptSetSummary));
+        additionNoticeCount = null;
+        NotifyAdditionNotice();
+    }
+
+    private void ShowAdditionNotice(int count)
+    {
+        additionNoticeCount = count;
+        // Notify even when the count repeats so the view restarts its ten-second timer.
+        NotifyAdditionNotice();
+    }
+
+    private void NotifyAdditionNotice()
+    {
+        Notify(nameof(AdditionNoticeCount));
+        Notify(nameof(HasAdditionNotice));
+        Notify(nameof(AdditionNoticeText));
     }
 
     private void ConfirmAddConceptSet()
@@ -303,47 +315,31 @@ public sealed class MainViewModel : INotifyPropertyChanged
         if (!IsAddingConceptSet || !CanAddConceptSet || selectedList is null)
             return;
 
-        SetConceptSetSummary(null);
         var candidates = new List<string>();
-        int tooLong = 0;
-        int invalid = 0;
-        int empty = 0;
         using var reader = new StringReader(DraftConceptSet);
         while (reader.ReadLine() is { } line)
         {
             string trimmed = line.Trim();
-            if (trimmed.Length == 0)
-                empty++;
-            else if (!trimmed.StartsWith('-'))
-                invalid++;
-            else
-            {
-                // Remove only the first ASCII dash; preserve internal dashes and casing.
-                string concept = trimmed[1..].Trim();
-                if (concept.Length == 0)
-                    empty++;
-                else if (concept.Length > 30)
-                    tooLong++;
-                else
-                    candidates.Add(concept);
-            }
+            if (!trimmed.StartsWith('-'))
+                continue;
+            // Remove only the first ASCII dash; preserve internal dashes and casing.
+            string concept = trimmed[1..].Trim();
+            if (concept.Length is > 0 and <= 30)
+                candidates.Add(concept);
         }
 
         if (candidates.Count == 0)
         {
-            SetConceptSetSummary((0, 0, tooLong, invalid, empty));
+            SetDialog(creating: false, deleting: false);
+            ShowAdditionNotice(0);
             return;
         }
         try
         {
             var result = listFiles.AddConcepts(selectedList, candidates);
             ReplaceConcepts(result.Concepts);
-            SetConceptSetSummary((result.Added, result.Duplicates, tooLong, invalid, empty));
-            if (result.Added > 0)
-            {
-                SetDialog(creating: false, deleting: false);
-                InformationRequested?.Invoke(ConceptSetSummary);
-            }
+            SetDialog(creating: false, deleting: false);
+            ShowAdditionNotice(result.Added);
         }
         catch (Exception exception) when (ListFileService.IsFileError(exception))
         {

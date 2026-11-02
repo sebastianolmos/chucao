@@ -13,9 +13,7 @@ internal static class ConceptSetChecks
         File.WriteAllText(path, "Concept,SeenOrder\r\nVisto,5\r\nExistente,0\r\n");
         var main = new MainViewModel(files);
         string? warning = null;
-        string? information = null;
         main.WarningRequested += (key, _) => warning = key;
-        main.InformationRequested += message => information = message;
         main.AddConceptSetCommand.Execute(null);
         check(!main.IsDialogOpen, "A concept set cannot be added without selecting a list");
         main.LoadLists();
@@ -36,26 +34,24 @@ internal static class ConceptSetChecks
         check(main.Concepts.Take(2).Select(entry => entry.SeenOrder).SequenceEqual(new[] { 5, 0 })
             && main.Concepts.Skip(2).All(entry => entry.SeenOrder == 0) && main.LastSeenConcept == "Visto",
             "A set preserves existing progress and adds every new concept with state zero");
-        string expectedSummary = string.Format(CultureInfo.CurrentCulture,
-            main.Localization["Concepts.SetSummary"], 4, 3, 1, 2, 2);
-        check(information == expectedSummary && main.ConceptSetSummary == expectedSummary,
-            "The summary counts additions, existing and internal duplicates, long, unmarked and empty lines");
+        check(main.AdditionNoticeCount == 4 && main.AdditionNoticeText == string.Format(CultureInfo.CurrentCulture,
+            main.Localization["Concepts.AddedMany"], 4), "The notice reports only the number successfully added");
         main.Localization.CurrentLanguage = "es";
-        check(main.ConceptSetSummary == string.Format(CultureInfo.CurrentCulture,
-            main.Localization["Concepts.SetSummary"], 4, 3, 1, 2, 2), "The summary follows the selected language");
+        check(main.AdditionNoticeText == string.Format(CultureInfo.CurrentCulture,
+            main.Localization["Concepts.AddedMany"], 4), "The count notice follows the selected language");
+        main.ClearAdditionNotice();
+        check(!main.HasAdditionNotice && main.AdditionNoticeText == "", "Expiring a notice clears its text and visibility");
         var reopened = new MainViewModel(new ListFileService(directory));
         reopened.LoadLists();
         reopened.OpenListCommand.Execute("Conjunto");
         check(reopened.Concepts.SequenceEqual(main.Concepts), "Every accepted concept survives reopening the list");
 
         string savedCsv = File.ReadAllText(path);
-        information = null;
         Begin("- " + new string('b', 31) + "\n• No\n- ");
         main.ConfirmAddConceptSetCommand.Execute(null);
-        check(main.IsAddingConceptSet && main.HasConceptSetSummary && information is null
-            && File.ReadAllText(path) == savedCsv, "An entirely invalid block keeps the form open without changing the CSV");
-        main.DraftConceptSet = "- Corregido";
-        check(!main.HasConceptSetSummary, "Editing the block clears the previous summary");
+        check(!main.IsDialogOpen && main.AdditionNoticeCount == 0 && File.ReadAllText(path) == savedCsv,
+            "An entirely invalid block reports zero additions without changing the CSV");
+        Begin("- Corregido");
         main.CancelDialogCommand.Execute(null);
         check(!main.IsDialogOpen && File.ReadAllText(path) == savedCsv, "Canceling a pasted set does not write concepts");
 
@@ -63,12 +59,13 @@ internal static class ConceptSetChecks
         using (var locked = File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read))
         {
             main.ConfirmAddConceptSetCommand.Execute(null);
-            check(main.IsAddingConceptSet && main.HasConceptSetSummary && warning is null,
+            check(!main.IsDialogOpen && main.AdditionNoticeCount == 0 && warning is null,
                 "An entirely duplicate block does not attempt to replace a locked CSV");
         }
         check(File.ReadAllText(path) == savedCsv, "Existing seen concepts and duplicates remain unchanged");
         main.CancelDialogCommand.Execute(null);
 
+        main.ClearAdditionNotice();
         Begin("- Uno nuevo\n- Dos nuevos");
         string draft = main.DraftConceptSet;
         int previousCount = main.Concepts.Count;
@@ -76,13 +73,13 @@ internal static class ConceptSetChecks
         {
             main.ConfirmAddConceptSetCommand.Execute(null);
             check(main.IsAddingConceptSet && main.DraftConceptSet == draft
-                && main.Concepts.Count == previousCount && warning == "Concepts.SetSaveError",
+                && main.Concepts.Count == previousCount && warning == "Concepts.SetSaveError" && !main.HasAdditionNotice,
                 "A failed batch save preserves the complete draft and displayed list");
         }
         check(File.ReadAllText(path) == savedCsv && Directory.GetFiles(directory, "*.tmp").Length == 0,
             "A failed batch leaves no partial additions or temporary files");
         main.ConfirmAddConceptSetCommand.Execute(null);
-        check(!main.IsDialogOpen && files.LoadConcepts("Conjunto").Count == previousCount + 2,
+        check(!main.IsDialogOpen && files.LoadConcepts("Conjunto").Count == previousCount + 2 && main.AdditionNoticeCount == 2,
             "Retrying the retained draft saves the entire set once");
 
         Begin("- visto\n- " + new string('ñ', 30) + "\n- Célula, \"unidad\"");
@@ -100,11 +97,13 @@ internal static class ConceptSetChecks
             "Invalid service input cannot save a partial batch");
 
         main.AddConceptSetCommand.Execute(null);
-        check(main.DraftConceptSet == "" && !main.HasConceptSetSummary, "Reopening the form starts with an empty draft and summary");
+        check(main.DraftConceptSet == "", "Reopening the form starts with an empty draft");
         main.DraftConceptSet = "   ";
         main.ConfirmAddConceptSetCommand.Execute(null);
         check(!main.CanAddConceptSet && main.IsAddingConceptSet && File.ReadAllText(path) == savedCsv,
             "A whitespace-only block cannot be confirmed");
         main.CancelDialogCommand.Execute(null);
+        main.BackCommand.Execute(null);
+        check(!main.HasAdditionNotice, "Leaving the list removes its previous addition notice");
     }
 }

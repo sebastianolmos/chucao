@@ -15,11 +15,19 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             <Grid Margin="16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
                 <Button x:Name="BackButton" Content="{Binding Localization[Lists.Back]}"
                         Command="{Binding BackCommand}" HorizontalAlignment="Left"
                         Padding="12,6" MinHeight="36"
                         Visibility="{Binding HasSelectedList, Converter={StaticResource BooleanToVisibility}}" />
-                <Button Content="{Binding Localization[Language.Toggle]}"
+                <TextBlock Grid.Column="1" Text="{Binding AdditionNoticeText}" Margin="12,0"
+                           VerticalAlignment="Center" TextWrapping="Wrap"
+                           Visibility="{Binding HasAdditionNotice, Converter={StaticResource BooleanToVisibility}}" />
+                <Button Grid.Column="2" Content="{Binding Localization[Language.Toggle]}"
                         ToolTip="{Binding Localization[Language.ToggleDescription]}"
                         AutomationProperties.Name="{Binding Localization[Language.ToggleDescription]}"
                         HorizontalAlignment="Right" Padding="12,6" MinWidth="48" MinHeight="36"

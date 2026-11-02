@@ -2,6 +2,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 using Chucao.Services;
 using Chucao.ViewModels;
 using CsvHelper;
@@ -14,6 +15,7 @@ public partial class MainWindow : Window
     private readonly SettingsService settings = new();
     private bool canSaveSettings = true;
     private IInputElement? dialogPreviousFocus;
+    private readonly DispatcherTimer additionNoticeTimer = new() { Interval = TimeSpan.FromSeconds(10) };
 
     public MainWindow()
     {
@@ -21,7 +23,8 @@ public partial class MainWindow : Window
         DataContext = viewModel;
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
         viewModel.WarningRequested += ShowListWarning;
-        viewModel.InformationRequested += ShowInformation;
+        additionNoticeTimer.Tick += AdditionNoticeTimer_Tick;
+        Closed += (_, _) => additionNoticeTimer.Stop();
         Loaded += (_, _) => viewModel.LoadLists();
         try
         {
@@ -38,6 +41,12 @@ public partial class MainWindow : Window
     // Focus belongs to the view; list contents and navigation state belong to the ViewModel.
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(MainViewModel.AdditionNoticeCount))
+        {
+            additionNoticeTimer.Stop();
+            if (viewModel.HasAdditionNotice)
+                additionNoticeTimer.Start();
+        }
         if (e.PropertyName == nameof(MainViewModel.IsDialogOpen))
         {
             if (viewModel.IsDialogOpen)
@@ -98,6 +107,9 @@ public partial class MainWindow : Window
         this, viewModel.Localization[key] + (details is null ? "" : Environment.NewLine + details),
         viewModel.Localization["Window.Title"], MessageBoxButton.OK, MessageBoxImage.Warning);
 
-    private void ShowInformation(string message) => MessageBox.Show(
-        this, message, viewModel.Localization["Window.Title"], MessageBoxButton.OK, MessageBoxImage.Information);
+    private void AdditionNoticeTimer_Tick(object? sender, EventArgs e)
+    {
+        additionNoticeTimer.Stop();
+        viewModel.ClearAdditionNotice();
+    }
 }
