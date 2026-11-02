@@ -2,6 +2,7 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using CsvHelper;
+using Chucao.Models;
 
 namespace Chucao.Services;
 
@@ -84,6 +85,65 @@ public sealed class ListFileService
         File.Delete(GetFilePath(name));
     }
 
+    public IReadOnlyList<ConceptEntry> LoadConcepts(string listName)
+    {
+        ValidateName(listName);
+        return ReadConcepts(GetFilePath(listName));
+    }
+
+    public IReadOnlyList<ConceptEntry> AddConcept(string listName, string concept)
+    {
+        if (string.IsNullOrWhiteSpace(concept) || concept.Length > 30)
+            throw new ArgumentException("Concepts must contain between 1 and 30 characters.", nameof(concept));
+
+        var concepts = LoadConcepts(listName).ToList();
+        if (concepts.Any(entry => string.Equals(entry.Concept, concept, StringComparison.Ordinal)))
+            throw new DuplicateConceptException();
+
+        concepts.Add(new ConceptEntry(concept, 0));
+        SaveConcepts(listName, concepts);
+        return concepts;
+    }
+
+    public IReadOnlyList<ConceptEntry> ResetList(string listName)
+    {
+        var concepts = LoadConcepts(listName)
+            .Select(entry => entry with { SeenOrder = 0 }).ToArray();
+        SaveConcepts(listName, concepts);
+        return concepts;
+    }
+
+    private void SaveConcepts(string listName, IReadOnlyList<ConceptEntry> concepts)
+    {
+        string path = GetFilePath(listName);
+        string temporaryPath = Path.Combine(directoryPath, $"{Guid.NewGuid():N}.tmp");
+        try
+        {
+            using (var writer = new StreamWriter(temporaryPath, false, Utf8))
+            using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+            {
+                csv.WriteField("Concept");
+                csv.WriteField("SeenOrder");
+                csv.NextRecord();
+                foreach (var entry in concepts)
+                {
+                    csv.WriteField(entry.Concept);
+                    csv.WriteField(entry.SeenOrder);
+                    csv.NextRecord();
+                }
+            }
+
+            // Replace an existing file only after writing the complete CSV.
+            // If it was deleted or is locked, fail without changing the displayed state.
+            File.Replace(temporaryPath, path, destinationBackupFileName: null);
+        }
+        finally
+        {
+            if (File.Exists(temporaryPath))
+                File.Delete(temporaryPath);
+        }
+    }
+
     // UTF-8 bytes encoded as hexadecimal form a safe, reversible Windows filename.
     // This preserves arbitrary display names without metadata columns or a separate catalog.
     private string GetFilePath(string name) => Path.Combine(directoryPath,
@@ -104,7 +164,9 @@ public sealed class ListFileService
             throw new ArgumentException("List names must contain between 1 and 30 characters without outer whitespace.", nameof(name));
     }
 
-    private static void ValidateCsv(string path)
+    private static void ValidateCsv(string path) => _ = ReadConcepts(path);
+
+    private static IReadOnlyList<ConceptEntry> ReadConcepts(string path)
     {
         using var reader = new StreamReader(path, Utf8);
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
@@ -115,13 +177,16 @@ public sealed class ListFileService
             throw new InvalidDataException("Unexpected list columns.");
 
         var seenOrders = new HashSet<int>();
+        var concepts = new List<ConceptEntry>();
         while (csv.Read())
         {
             if (csv.Parser.Count != 2 || string.IsNullOrWhiteSpace(csv.GetField("Concept"))
                 || !int.TryParse(csv.GetField("SeenOrder"), NumberStyles.None, CultureInfo.InvariantCulture, out int order)
                 || order < 0 || (order > 0 && !seenOrders.Add(order)))
                 throw new InvalidDataException("Invalid concept or selection order.");
+            concepts.Add(new ConceptEntry(csv.GetField("Concept")!, order));
         }
+        return concepts;
     }
 
     public static bool IsFileError(Exception exception) =>
@@ -131,4 +196,9 @@ public sealed class ListFileService
 public sealed class DuplicateListException : IOException
 {
     public DuplicateListException() : base("A list with this name already exists.") { }
+}
+
+public sealed class DuplicateConceptException : IOException
+{
+    public DuplicateConceptException() : base("This exact concept already exists in the list.") { }
 }

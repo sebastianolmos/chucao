@@ -40,6 +40,7 @@
                 <Grid>
                     <views:CreateListView Visibility="{Binding IsCreatingList, Converter={StaticResource BooleanToVisibility}}" />
                     <views:DeleteListView Visibility="{Binding IsDeletingList, Converter={StaticResource BooleanToVisibility}}" />
+                    <views:CreateConceptView Visibility="{Binding IsCreatingConcept, Converter={StaticResource BooleanToVisibility}}" />
                 </Grid>
             </Border>
         </Grid>

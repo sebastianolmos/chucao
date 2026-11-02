@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Input;
 using Chucao.Services;
+using Chucao.Models;
 
 namespace Chucao.ViewModels;
 
@@ -11,6 +12,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private string draftListName = "";
     private bool isCreatingList;
     private bool isDeletingList;
+    private bool isCreatingConcept;
+    private string draftConceptText = "";
     private readonly ListFileService listFiles;
 
     public MainViewModel(ListFileService? listFiles = null)
@@ -36,18 +39,43 @@ public sealed class MainViewModel : INotifyPropertyChanged
         });
         ConfirmDeleteCommand = new RelayCommand(_ => ConfirmDelete());
         CancelDialogCommand = new RelayCommand(_ => SetDialog(creating: false, deleting: false));
+        AddConceptCommand = new RelayCommand(_ =>
+        {
+            if (!HasSelectedList)
+                return;
+            DraftConceptText = "";
+            SetDialog(creating: false, deleting: false, addingConcept: true);
+        });
+        ConfirmAddConceptCommand = new RelayCommand(_ => ConfirmAddConcept());
+        ResetListCommand = new RelayCommand(_ => ResetSelectedList());
     }
 
     public LocalizationService Localization { get; } = new();
     public ObservableCollection<string> Lists { get; }
+    public ObservableCollection<ConceptEntry> Concepts { get; } = new();
     public string? SelectedList => selectedList;
     public bool HasSelectedList => selectedList is not null;
     public bool IsListsVisible => !HasSelectedList;
     public bool IsCreatingList => isCreatingList;
     public bool IsDeletingList => isDeletingList;
-    public bool IsDialogOpen => isCreatingList || isDeletingList;
+    public bool IsCreatingConcept => isCreatingConcept;
+    public bool IsDialogOpen => isCreatingList || isDeletingList || isCreatingConcept;
     public bool IsContentEnabled => !IsDialogOpen;
     public bool CanCreateList => !string.IsNullOrWhiteSpace(DraftListName) && DraftListName.Length <= 30;
+    public bool CanAddConcept => !string.IsNullOrWhiteSpace(DraftConceptText) && DraftConceptText.Length <= 30;
+
+    public string DraftConceptText
+    {
+        get => draftConceptText;
+        set
+        {
+            if (draftConceptText == value)
+                return;
+            draftConceptText = value;
+            Notify(nameof(DraftConceptText));
+            Notify(nameof(CanAddConcept));
+        }
+    }
 
     public string DraftListName
     {
@@ -69,6 +97,9 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand DeleteListCommand { get; }
     public ICommand ConfirmDeleteCommand { get; }
     public ICommand CancelDialogCommand { get; }
+    public ICommand AddConceptCommand { get; }
+    public ICommand ConfirmAddConceptCommand { get; }
+    public ICommand ResetListCommand { get; }
 
     public event Action<string, string?>? WarningRequested;
 
@@ -91,20 +122,80 @@ public sealed class MainViewModel : INotifyPropertyChanged
 
     private void SelectList(string? name)
     {
+        if (name is not null)
+        {
+            try
+            {
+                ReplaceConcepts(listFiles.LoadConcepts(name));
+            }
+            catch (Exception exception) when (ListFileService.IsFileError(exception))
+            {
+                WarningRequested?.Invoke("Concepts.LoadError", null);
+                return;
+            }
+        }
+        else
+        {
+            Concepts.Clear();
+        }
         selectedList = name;
         Notify(nameof(SelectedList));
         Notify(nameof(HasSelectedList));
         Notify(nameof(IsListsVisible));
     }
 
-    private void SetDialog(bool creating, bool deleting)
+    private void SetDialog(bool creating, bool deleting, bool addingConcept = false)
     {
         isCreatingList = creating;
         isDeletingList = deleting;
+        isCreatingConcept = addingConcept;
         Notify(nameof(IsCreatingList));
         Notify(nameof(IsDeletingList));
+        Notify(nameof(IsCreatingConcept));
         Notify(nameof(IsDialogOpen));
         Notify(nameof(IsContentEnabled));
+    }
+
+    private void ReplaceConcepts(IReadOnlyList<ConceptEntry> concepts)
+    {
+        Concepts.Clear();
+        foreach (var entry in concepts)
+            Concepts.Add(entry);
+    }
+
+    private void ConfirmAddConcept()
+    {
+        if (!IsCreatingConcept || !CanAddConcept || selectedList is null)
+            return;
+        try
+        {
+            ReplaceConcepts(listFiles.AddConcept(selectedList, DraftConceptText));
+        }
+        catch (DuplicateConceptException)
+        {
+            WarningRequested?.Invoke("Concepts.Duplicate", null);
+            return;
+        }
+        catch (Exception exception) when (ListFileService.IsFileError(exception))
+        {
+            WarningRequested?.Invoke("Concepts.SaveError", null);
+            return;
+        }
+        SetDialog(creating: false, deleting: false);
+    }
+
+    private void ResetSelectedList()
+    {
+        if (selectedList is null || IsDialogOpen)
+            return;
+        try
+        {
+            ReplaceConcepts(listFiles.ResetList(selectedList));
+        }
+        catch (Exception exception) when (ListFileService.IsFileError(exception))
+        {
+            WarningRequested?.Invoke("Concepts.ResetError", null);
+        }
     }
 
     private void ConfirmCreate()

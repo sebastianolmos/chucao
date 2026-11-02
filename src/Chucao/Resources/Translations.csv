@@ -17,5 +17,16 @@ Lists.CreateError,No se pudo guardar la lista. Comprueba los permisos y el espac
 Lists.DeleteError,No se pudo eliminar el archivo de la lista. La lista se conservará. Comprueba que el archivo no esté bloqueado y vuelve a intentarlo.,The list file could not be deleted. The list will be kept. Check that the file is not locked and try again.
 Common.Cancel,Cancelar,Cancel
 Common.Confirm,Confirmar,Confirm
+Concepts.Title,Conceptos,Concepts
+Concepts.Add,Agregar concepto,Add concept
+Concepts.AddSet,Agregar conjunto,Add set
+Concepts.AddSetPending,Esta función estará disponible más adelante.,This feature will be available later.
+Concepts.Name,Nombre del concepto,Concept name
+Concepts.NameLimit,Máximo 30 caracteres.,Maximum 30 characters.
+Concepts.Duplicate,Este concepto exacto ya existe en esta lista. Escribe otro texto.,This exact concept already exists in this list. Enter different text.
+Concepts.LoadError,No se pudieron leer los conceptos. Comprueba que el CSV siga disponible y sea válido.,Concepts could not be read. Check that the CSV is still available and valid.
+Concepts.SaveError,No se pudo guardar el concepto. No se modificó la lista. Comprueba que el archivo no esté bloqueado y vuelve a intentarlo.,The concept could not be saved. The list was not changed. Check that the file is not locked and try again.
+Concepts.ResetError,No se pudo reiniciar la lista. Se conservó el progreso anterior. Comprueba el archivo y vuelve a intentarlo.,The list could not be reset. Previous progress was preserved. Check the file and try again.
+Lists.Reset,Reiniciar lista,Reset list
 Settings.ReadError,No se pudo leer la preferencia de idioma. Se utilizará inglés y se conservará el archivo existente. Los cambios de idioma de esta sesión no se guardarán.,The language preference could not be read. English will be used and the existing file will be preserved. Language changes in this session will not be saved.
 Settings.WriteError,El idioma cambió pero no se pudo guardar la preferencia. Al volver a abrir Chucao puede recuperarse la selección anterior.,The language changed but the preference could not be saved. Reopening Chucao may restore the previous selection.

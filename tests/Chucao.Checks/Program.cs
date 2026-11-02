@@ -136,7 +136,7 @@ try
     Check(duplicateRejected && File.ReadAllText(unusualPath) == original,
         "Names differing only in case cannot overwrite an existing list");
 
-    // Simulate concept data without implementing concept editing or practice.
+    // Seed CSV data to check file discovery without selecting concepts for practice.
     string conceptCsv = "Concept,SeenOrder\r\n\"Célula, tejido y \"\"órgano\"\"\",0\r\n\"Concepto\ncon salto\",2\r\n";
     File.WriteAllText(unusualPath, conceptCsv);
     Check(listFiles.LoadLists().Names.Contains(unusualName) && File.ReadAllText(unusualPath) == conceptCsv,
@@ -179,6 +179,7 @@ try
     blocked.ConfirmCreateCommand.Execute(null);
     Check(blocked.Lists.Count == 0 && blocked.IsCreatingList && blocked.DraftListName == "Test"
         && lastWarning == "Lists.CreateError", "A failed creation preserves the draft and does not add an unsaved card");
+    ConceptChecks.Run(directory, Check);
     Console.WriteLine($"{passed} checks passed.");
 }
 finally
