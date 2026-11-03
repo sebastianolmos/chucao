@@ -40,10 +40,71 @@ Los nombres visibles admiten caracteres como `/`, `:` o `?`: el archivo usa `lis
 - `src/Chucao/Views`: ventana contenedora y vistas separadas de listas, detalle, creación y confirmación de eliminación. Sus archivos `.xaml.cs` solo coordinan presentación, foco y desplazamiento, además de conectar el selector de idioma con los servicios existentes.
 - `src/Chucao/ViewModels`: estado de las listas, navegación y formularios en `MainViewModel`; `TimerViewModel` mantiene el estado de la cuenta atrás usando `TimeProvider`; `RelayCommand` conecta los botones con sus acciones mediante `ICommand` de WPF.
 - `src/Chucao/Services`: localización, lectura/escritura de preferencias, persistencia de listas en `ListFileService` y elección entre conceptos disponibles en `ConceptSelectionService`.
-- `src/Chucao/Resources`: traducciones.
+- `src/Chucao/Resources`: traducciones y estilos tipográficos compartidos en `Typography.xaml`.
 - `src/Chucao/Models`: `ConceptEntry` representa el texto y el estado de un concepto, sin dependencias de WPF.
 
-La aplicación arranca desde `Views/MainWindow.xaml`. Los formularios de conceptos están en `Views/CreateConceptView.xaml` y `Views/AddConceptSetView.xaml`. `MainViewModel` procesa las líneas y expone el conteo añadido; `MainWindow.xaml.cs` oculta el aviso con un `DispatcherTimer` de WPF, exclusivo de esta notificación visual. `ListFileService` comprueba los duplicados sobre el CSV actual y guarda el conjunto completo. No se crea `Assets` hasta que una funcionalidad lo necesite.
+La aplicación arranca desde `Views/MainWindow.xaml`. Los formularios de conceptos están en `Views/CreateConceptView.xaml` y `Views/AddConceptSetView.xaml`. `MainViewModel` procesa las líneas y expone el conteo añadido; `MainWindow.xaml.cs` oculta el aviso con un `DispatcherTimer` de WPF, exclusivo de esta notificación visual. `ListFileService` comprueba los duplicados sobre el CSV actual y guarda el conjunto completo. `Assets/Fonts`, en la raíz del repositorio, contiene las fuentes proporcionadas para la aplicación.
+
+## Imagen e iconos temporales
+
+`Assets/Images/pequeno.png` se muestra centrado encima de «Chucao» en la vista principal. La imagen ocupa 96 × 96 unidades de WPF, mantiene su proporción y reduce el espacio restante del contenedor de listas, que sigue siendo desplazable. Sus dimensiones y separación están en `Views/ListsView.xaml`, en el elemento `HomeBirdImage` (`Width`, `Height`, `Margin` y `Stretch`).
+
+El icono del ejecutable usa `Assets/Images/pequeno.ico`, convertido desde el PNG con transparencia y tamaños 16, 24, 32, 48, 64, 128 y 256. El estilo compartido `AppWindowStyle` de `Resources/Typography.xaml` aplica el mismo icono a las ventanas y sus botones de la barra de tareas. Los dos archivos temporales están excluidos de Git mediante reglas específicas de `.gitignore`; no se excluye toda la carpeta de imágenes.
+
+Para usar el diseño definitivo:
+
+1. Agregar su PNG e ICO en `Assets/Images`.
+2. Cambiar únicamente las rutas `ApplicationImageFile` y `ApplicationIconFile` al principio de `src/Chucao/Chucao.csproj`. `ApplicationIcon` configura el ejecutable. Los alias internos `Assets/Images/Application.png` y `Assets/Images/Application.ico` permanecen estables, por lo que no hace falta cambiar las vistas ni `App.xaml.cs`.
+3. Si se mantienen los nombres temporales para los archivos definitivos, quitar sus dos reglas de `.gitignore` para poder versionarlos. Si se usan nombres nuevos, esas reglas no los afectan.
+4. Compilar de nuevo para actualizar los recursos y el icono del ejecutable.
+
+`App.xaml.cs` carga los recursos gráficos antes de abrir la ventana. Si no están los archivos temporales en otro checkout, se omiten de la compilación y la aplicación utiliza su icono genérico y oculta la imagen de portada sin dejar un hueco.
+
+El conversor reutilizable está en `tools/Convert-PngToIcon.ps1`. Desde la raíz del repositorio, ejecutarlo con `-InputPath .\Assets\Images\pequeno.png -OutputPath .\Assets\Images\pequeno.ico`; añadir `-Force` solo para reemplazar un ICO existente. Si la política local impide ejecutar scripts, se necesita autorizar su ejecución; no es necesario cambiar permanentemente la configuración del sistema. El conversor conserva el PNG original y centra imágenes no cuadradas sin deformarlas.
+
+Para cambiar dimensiones de botones:
+
+| Elemento | Lugar | Propiedades |
+|---|---|---|
+| Tarjetas de listas | `Views/ListsView.xaml`, botón del `DataTemplate` | `MinHeight="60"`, `Padding="8"`, `Margin="4"`; el ancho lo reparte `UniformGrid Columns="2"`. |
+| Agregar lista (+) | `Views/ListsView.xaml`, `AddListButton` | `MinHeight="40"` y `Margin`; se puede añadir `Padding`, `Height` o `Width`. El tamaño del símbolo se configura en `AddListFontSize` de `Typography.xaml`. |
+| Temporizador principal | `Views/ListsView.xaml`, `TimerButton` | `Padding="12,10"` y `Margin="0,16,0,0"`; se puede fijar `Height` o `MinHeight`. |
+| Otros botones | Su archivo de `Views` y el estilo implícito `Button` de `Typography.xaml` | `Width`, `Height`, `MinWidth`, `MinHeight`, `Padding` y `Margin`. Los valores locales de las vistas tienen prioridad sobre el estilo. |
+
+`MinHeight` es una altura mínima y permite crecer con el contenido; `Height` fija la altura. `Padding` es el espacio interior y `Margin` el exterior. Las medidas son unidades de WPF. Se verificó que WPF decodifica los siete tamaños del ICO y que Git ignora ambos archivos temporales. No se ejecutó build ni revisión visual de la aplicación.
+
+## Tipografía
+
+Comfortaa © 2011 The Comfortaa Project Authors. Fuente utilizada bajo la **SIL Open Font License, versión 1.1**. El texto completo de la licencia está en [Assets/Fonts/OFL.txt](Assets/Fonts/OFL.txt).
+
+La interfaz usa Comfortaa. Los archivos Light, Bold y Regular de `Assets/Fonts` están enlazados como recursos WPF en `src/Chucao/Chucao.csproj`, sin moverlos ni modificarlos; los pesos utilizados por cada rol se configuran en `RegularFontWeight` y `EmphasisFontWeight` de `Resources/Typography.xaml`. La licencia `Assets/Fonts/OFL.txt` se copia junto a la distribución.
+
+Para cambiar los archivos de fuente, editar sus elementos `Resource Include` de `Chucao.csproj` y sus rutas `Link` si corresponde. Para cambiar la familia interna o los pesos, editar `AppFontFamily`, `RegularFontWeight` y `EmphasisFontWeight` al comienzo de `src/Chucao/Resources/Typography.xaml`. `#Comfortaa` es el nombre interno de la familia, no el nombre del archivo. `App.xaml` carga ese diccionario para toda la aplicación.
+
+Los tamaños se configuran en las claves `...FontSize` de ese mismo diccionario:
+
+| Grupo | Clave | Tamaño |
+|---|---|---|
+| Texto general y etiquetas | `BodyFontSize` | 12 |
+| Botones | `ButtonFontSize` | 12 |
+| Tarjetas de listas | `ListCardFontSize` | 16 |
+| Campos de texto | `InputFontSize` | 16 |
+| Selector y opciones de minutos | `MinutesFontSize` | 18 |
+| Nombre Chucao y subtítulo | `AppTitleFontSize`, `SubtitleFontSize` | 36, 18 |
+| Nombre de lista y título de página | `ListTitleFontSize`, `PageTitleFontSize` | 26, 28 |
+| Títulos de formularios y confirmación | `DialogTitleFontSize`, `SmallDialogTitleFontSize` | 22, 20 |
+| Título de configuraciones y rótulo del concepto elegido | `SettingsTitleFontSize`, `DialogCaptionFontSize` | 24, 20 |
+| Conceptos y último visto | `ConceptFontSize`, `LastSeenFontSize` | 16, 16 |
+| Concepto elegido y concepto del temporizador | `SelectedConceptFontSize`, `TimerConceptFontSize` | 32, 28 |
+| Números del temporizador | `TimerDigitsFontSize` | 64 |
+| Botón + e icono del engranaje | `AddListFontSize`, `IconFontSize` | 24, 18 |
+| Ayudas y avisos temporales | `HelpFontSize`, `NoticeFontSize` | 12, 12 |
+
+Los colores de texto se centralizan en `BodyTextBrush`, `TitleTextBrush`, `SecondaryTextBrush`, `ButtonTextBrush`, `InputTextBrush` y `NoticeTextBrush`, inicialmente negros. Los estados deshabilitados de botones conservan el color del sistema. Cada estilo de grupo puede ampliar o reemplazar propiedades como `Foreground`, `FontWeight`, `FontStyle` o `FontStretch`; las vistas solo asignan su estilo mediante `Style`. Esta tarea no cambia superficies ni bordes.
+
+Los avisos de error usan `Views/NoticeWindow.xaml` para que su contenido y botón también adopten Comfortaa. El engranaje sigue usando Segoe MDL2 Assets, una fuente de símbolos. La barra de título nativa y los menús de Windows conservan su tipografía de sistema; personalizarlos requiere trabajar el marco por separado.
+
+Se comprobaron los nombres internos y la resolución de las caras Light/Bold con WPF sobre los archivos originales, además del XML y las referencias de estilos. No se ejecutó build ni revisión visual de la aplicación: después de compilar hay que comprobar texto en ambos idiomas, diálogos, desplegables, botones deshabilitados, teclado, cifras y posibles recortes dentro de la ventana fija.
 
 ## Funciones previstas
 
@@ -136,3 +197,7 @@ dotnet run --project .\src\Chucao\Chucao.csproj
 A self-contained Windows release is planned. User data will remain outside the executable.
 
 The timer is accessible from the home screen or a selected concept. Settings (top-left gear) persist a whole-minute duration from 1 to 59, defaulting to one, alongside the language preference. The timer shows mm:ss and supports Start, Pause, Resume and Start again after reaching zero. Back stops it and restores its origin; reopening prepares the full duration. Language changes preserve the countdown. Its view reserves blank space for a future animation. No build or tests were run for this change; TimerChecks includes a simulated clock and persistence checks.
+
+Typography is centralized in src/Chucao/Resources/Typography.xaml. Comfortaa-Light.ttf is the regular role and Comfortaa-Bold.ttf is the emphasis role; Chucao.csproj links these two files from the repository's Assets/Fonts directory as WPF resources and distributes OFL.txt. Shared size keys and text brushes cover all UI groups. Custom WPF notices use the same font. The gear retains its icon font, and native Windows captions retain system typography. No build or visual app review was performed for this change.
+
+The temporary bird PNG and generated multi-size ICO are ignored by Git. Chucao.csproj selects their source paths with ApplicationImageFile and ApplicationIconFile; stable internal resource aliases avoid view changes when replacing the artwork. The PNG appears at 96 by 96 WPF units above Chucao, configured in ListsView.xaml. Missing preview files are optional. Convert-PngToIcon.ps1 provides PNG-to-ICO conversion without modifying the source image. No build or visual application review was performed.

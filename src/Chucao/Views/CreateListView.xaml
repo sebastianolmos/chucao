@@ -3,14 +3,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              IsVisibleChanged="View_IsVisibleChanged">
     <StackPanel>
-        <TextBlock Text="{Binding Localization[Lists.Create]}" FontSize="22"
-                   FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,20" />
+        <TextBlock Text="{Binding Localization[Lists.Create]}" Style="{StaticResource DialogTitleTextStyle}"
+                    TextWrapping="Wrap" Margin="0,0,0,20" />
         <Label Content="{Binding Localization[Lists.Name]}"
                Target="{Binding ElementName=ListNameInput}" Padding="0,0,0,6" />
-        <TextBox x:Name="ListNameInput" MaxLength="30" Padding="8" FontSize="16"
+        <TextBox x:Name="ListNameInput" MaxLength="30" Padding="8"
                  Text="{Binding DraftListName, UpdateSourceTrigger=PropertyChanged}"
                  AutomationProperties.Name="{Binding Localization[Lists.Name]}" />
-        <TextBlock Text="{Binding Localization[Lists.NameLimit]}"
+        <TextBlock Text="{Binding Localization[Lists.NameLimit]}" Style="{StaticResource SecondaryTextStyle}"
                    TextWrapping="Wrap" Margin="0,6,0,16" />
         <WrapPanel HorizontalAlignment="Right">
             <Button Content="{Binding Localization[Common.Cancel]}" Padding="12,8"

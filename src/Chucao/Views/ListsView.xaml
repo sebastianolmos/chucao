@@ -9,9 +9,22 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel Margin="0,0,0,16">
-            <TextBlock Text="{Binding Localization[Window.Title]}" FontSize="36"
-                       FontWeight="SemiBold" TextAlignment="Center" />
-            <TextBlock Text="{Binding Localization[Practice.Subtitle]}" FontSize="18"
+            <Image x:Name="HomeBirdImage" Source="{DynamicResource ApplicationImage}"
+                   Width="96" Height="96" Stretch="Uniform" Margin="0,0,0,8"
+                   HorizontalAlignment="Center" Focusable="False">
+                <Image.Style>
+                    <Style TargetType="Image">
+                        <Style.Triggers>
+                            <Trigger Property="Source" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+            <TextBlock Text="{Binding Localization[Window.Title]}" Style="{StaticResource AppTitleTextStyle}"
+                        TextAlignment="Center" />
+            <TextBlock Text="{Binding Localization[Practice.Subtitle]}" Style="{StaticResource SubtitleTextStyle}"
                        Margin="0,4,0,0" TextAlignment="Center" TextWrapping="Wrap" />
         </StackPanel>
         <Border Grid.Row="1" BorderBrush="#B8B8B8" BorderThickness="1" CornerRadius="6" Padding="12">
@@ -30,7 +43,7 @@
                                         HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                         Command="{Binding DataContext.OpenListCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}">
-                                    <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" FontSize="16" />
+                                    <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" Style="{StaticResource ListCardTextStyle}" />
                                 </Button>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
@@ -39,7 +52,7 @@
                             Margin="4,10,4,4"
                             ToolTip="{Binding Localization[Lists.Create]}"
                             AutomationProperties.Name="{Binding Localization[Lists.Create]}"
-                            FontSize="24" MinHeight="40" Command="{Binding CreateListCommand}" />
+                            Style="{StaticResource AddListButtonStyle}" MinHeight="40" Command="{Binding CreateListCommand}" />
                 </StackPanel>
             </ScrollViewer>
         </Border>

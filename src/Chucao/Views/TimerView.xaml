@@ -15,14 +15,15 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
-        <TextBlock Text="{Binding Localization[Timer.Title]}" FontSize="28" FontWeight="SemiBold"
+        <TextBlock Text="{Binding Localization[Timer.Title]}" Style="{StaticResource PageTitleTextStyle}"
                    TextAlignment="Center" />
         <!-- Row 1 is reserved for the future animation. -->
-        <TextBlock Grid.Row="2" Text="{Binding Timer.Concept}" FontSize="28" FontWeight="SemiBold"
+        <TextBlock Grid.Row="2" Text="{Binding Timer.Concept}" Style="{StaticResource TimerConceptTextStyle}"
                    TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,8" />
-        <TextBlock Grid.Row="3" Text="{Binding Timer.DisplayTime}" FontSize="64" FontWeight="SemiBold"
+        <TextBlock Grid.Row="3" Text="{Binding Timer.DisplayTime}" Style="{StaticResource TimerDigitsTextStyle}"
                    TextAlignment="Center" AutomationProperties.Name="{Binding Localization[Timer.Remaining]}" />
         <TextBlock Grid.Row="4" Text="{Binding Localization[Timer.Finished]}" TextAlignment="Center"
+                   Style="{StaticResource SecondaryTextStyle}"
                    TextWrapping="Wrap" Margin="0,4,0,8"
                    Visibility="{Binding Timer.IsFinished, Converter={StaticResource BooleanToVisibility}}" />
         <Button x:Name="StartButton" Grid.Row="5" Content="{Binding Timer.ActionText}"

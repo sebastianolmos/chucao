@@ -1,0 +1,166 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=System.Runtime">
+    <!-- Font files are linked as WPF Resources in Chucao.csproj.
+         #Comfortaa is the internal typographic family, not the filename.
+         Regular means Comfortaa-Light (300); emphasis means Comfortaa-Bold (700). -->
+    <FontFamily x:Key="AppFontFamily">/Chucao;component/Assets/Fonts/#Comfortaa</FontFamily>
+    <FontWeight x:Key="RegularFontWeight">Regular</FontWeight>
+    <FontWeight x:Key="EmphasisFontWeight">Bold</FontWeight>
+
+    <!-- Shared sizes. Change one role without editing individual views. -->
+    <sys:Double x:Key="BodyFontSize">12</sys:Double>
+    <sys:Double x:Key="ButtonFontSize">12</sys:Double>
+    <sys:Double x:Key="InputFontSize">16</sys:Double>
+    <sys:Double x:Key="MinutesFontSize">18</sys:Double>
+    <sys:Double x:Key="AppTitleFontSize">36</sys:Double>
+    <sys:Double x:Key="SubtitleFontSize">18</sys:Double>
+    <sys:Double x:Key="ListTitleFontSize">26</sys:Double>
+    <sys:Double x:Key="PageTitleFontSize">28</sys:Double>
+    <sys:Double x:Key="DialogTitleFontSize">22</sys:Double>
+    <sys:Double x:Key="SmallDialogTitleFontSize">20</sys:Double>
+    <sys:Double x:Key="SettingsTitleFontSize">24</sys:Double>
+    <sys:Double x:Key="DialogCaptionFontSize">20</sys:Double>
+    <sys:Double x:Key="ConceptFontSize">16</sys:Double>
+    <sys:Double x:Key="ListCardFontSize">16</sys:Double>
+    <sys:Double x:Key="LastSeenFontSize">16</sys:Double>
+    <sys:Double x:Key="SelectedConceptFontSize">32</sys:Double>
+    <sys:Double x:Key="TimerConceptFontSize">28</sys:Double>
+    <sys:Double x:Key="TimerDigitsFontSize">64</sys:Double>
+    <sys:Double x:Key="AddListFontSize">24</sys:Double>
+    <sys:Double x:Key="IconFontSize">18</sys:Double>
+    <sys:Double x:Key="HelpFontSize">12</sys:Double>
+    <sys:Double x:Key="NoticeFontSize">12</sys:Double>
+
+    <!-- Text colors; surfaces and borders remain separate from typography. -->
+    <SolidColorBrush x:Key="BodyTextBrush" Color="#000000" />
+    <SolidColorBrush x:Key="TitleTextBrush" Color="#000000" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#000000" />
+    <SolidColorBrush x:Key="ButtonTextBrush" Color="#000000" />
+    <SolidColorBrush x:Key="InputTextBrush" Color="#000000" />
+    <SolidColorBrush x:Key="NoticeTextBrush" Color="#000000" />
+
+    <Style x:Key="AppWindowStyle" TargetType="Window">
+        <Setter Property="Icon" Value="{DynamicResource ApplicationWindowIcon}" />
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource BodyFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource BodyTextBrush}" />
+    </Style>
+
+    <!-- Text blocks inherit weight, size and color from their parent unless given a role. -->
+    <Style TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+    </Style>
+    <Style x:Key="BodyTextStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource BodyFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource BodyTextBrush}" />
+    </Style>
+    <Style x:Key="SecondaryTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource HelpFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource SecondaryTextBrush}" />
+    </Style>
+    <Style x:Key="NoticeTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource NoticeFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource NoticeTextBrush}" />
+    </Style>
+    <Style x:Key="EmphasisTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}">
+        <Setter Property="FontWeight" Value="{DynamicResource EmphasisFontWeight}" />
+        <Setter Property="Foreground" Value="{DynamicResource TitleTextBrush}" />
+    </Style>
+    <Style x:Key="AppTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource AppTitleFontSize}" />
+    </Style>
+    <Style x:Key="SubtitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource SecondaryTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource SubtitleFontSize}" />
+    </Style>
+    <Style x:Key="ListTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource ListTitleFontSize}" />
+    </Style>
+    <Style x:Key="PageTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource PageTitleFontSize}" />
+    </Style>
+    <Style x:Key="DialogTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource DialogTitleFontSize}" />
+    </Style>
+    <Style x:Key="SmallDialogTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource SmallDialogTitleFontSize}" />
+    </Style>
+    <Style x:Key="SettingsTitleTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource SettingsTitleFontSize}" />
+    </Style>
+    <Style x:Key="DialogCaptionTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource DialogCaptionFontSize}" />
+    </Style>
+    <Style x:Key="ConceptTextStyle" TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource ConceptFontSize}" />
+    </Style>
+    <Style x:Key="LastSeenTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource LastSeenFontSize}" />
+    </Style>
+    <Style x:Key="SelectedConceptTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource SelectedConceptFontSize}" />
+    </Style>
+    <Style x:Key="TimerConceptTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource TimerConceptFontSize}" />
+    </Style>
+    <Style x:Key="TimerDigitsTextStyle" TargetType="TextBlock" BasedOn="{StaticResource EmphasisTextStyle}">
+        <Setter Property="FontSize" Value="{DynamicResource TimerDigitsFontSize}" />
+    </Style>
+
+    <!-- Control styles also cover their generated text and dropdown items. -->
+    <Style x:Key="ListCardTextStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource ListCardFontSize}" />
+    </Style>
+    <Style TargetType="Button">
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource ButtonTextBrush}" />
+        <Style.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    <Style x:Key="AddListButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="FontSize" Value="{DynamicResource AddListFontSize}" />
+    </Style>
+    <Style TargetType="TextBox">
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource InputFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource InputTextBrush}" />
+    </Style>
+    <Style TargetType="ComboBox">
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource MinutesFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource InputTextBrush}" />
+    </Style>
+    <Style TargetType="ComboBoxItem">
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource MinutesFontSize}" />
+    </Style>
+    <Style TargetType="Label">
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource BodyFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource BodyTextBrush}" />
+    </Style>
+    <Style TargetType="ToolTip">
+        <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
+        <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
+        <Setter Property="FontSize" Value="{DynamicResource BodyFontSize}" />
+        <Setter Property="Foreground" Value="{DynamicResource BodyTextBrush}" />
+    </Style>
+    <!-- The gear is a symbol, not a text font. Preserve its dedicated icon family. -->
+    <Style x:Key="SettingsIconTextStyle" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+        <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="FontSize" Value="{DynamicResource IconFontSize}" />
+    </Style>
+</ResourceDictionary>

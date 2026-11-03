@@ -3,9 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              IsVisibleChanged="View_IsVisibleChanged">
     <StackPanel>
-        <TextBlock Text="{Binding Localization[Concepts.SelectedTitle]}" FontSize="20"
+        <TextBlock Text="{Binding Localization[Concepts.SelectedTitle]}" Style="{StaticResource DialogCaptionTextStyle}"
                    TextAlignment="Center" TextWrapping="Wrap" />
-        <TextBlock Text="{Binding SelectedConcept}" FontSize="32" FontWeight="SemiBold"
+        <TextBlock Text="{Binding SelectedConcept}" Style="{StaticResource SelectedConceptTextStyle}"
                    TextAlignment="Center" TextWrapping="Wrap" Margin="0,24" />
         <Grid>
             <Grid.ColumnDefinitions>

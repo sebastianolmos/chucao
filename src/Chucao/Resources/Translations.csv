@@ -17,6 +17,7 @@ Lists.CreateError,No se pudo guardar la lista. Comprueba los permisos y el espac
 Lists.DeleteError,No se pudo eliminar el archivo de la lista. La lista se conservará. Comprueba que el archivo no esté bloqueado y vuelve a intentarlo.,The list file could not be deleted. The list will be kept. Check that the file is not locked and try again.
 Common.Cancel,Cancelar,Cancel
 Common.Confirm,Confirmar,Confirm
+Common.OK,Aceptar,OK
 Concepts.Title,Conceptos,Concepts
 Concepts.SelectRandom,Seleccionar concepto aleatorio,Select random concept
 Concepts.SelectedTitle,Concepto seleccionado,Selected concept

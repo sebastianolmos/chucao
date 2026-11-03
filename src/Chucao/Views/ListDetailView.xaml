@@ -11,19 +11,19 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         <StackPanel>
-            <TextBlock Text="{Binding SelectedList}" FontSize="26" FontWeight="SemiBold"
+            <TextBlock Text="{Binding SelectedList}" Style="{StaticResource ListTitleTextStyle}"
                        TextAlignment="Center" TextWrapping="Wrap" />
             <StackPanel Margin="0,8,0,0"
                         Visibility="{Binding HasSeenConcept, Converter={StaticResource BooleanToVisibility}}">
-                <TextBlock Text="{Binding Localization[Concepts.LastSeen]}"
+                <TextBlock Text="{Binding Localization[Concepts.LastSeen]}" Style="{StaticResource SecondaryTextStyle}"
                            TextAlignment="Center" TextWrapping="Wrap" />
-                <TextBlock Text="{Binding LastSeenConcept}" FontSize="16" FontWeight="SemiBold"
+                <TextBlock Text="{Binding LastSeenConcept}" Style="{StaticResource LastSeenTextStyle}"
                            TextAlignment="Center" TextWrapping="Wrap" />
             </StackPanel>
             <TextBlock Text="{Binding Localization[Concepts.NoneSeen]}" Margin="0,8,0,0"
                        TextAlignment="Center" TextWrapping="Wrap">
                 <TextBlock.Style>
-                    <Style TargetType="TextBlock">
+                    <Style TargetType="TextBlock" BasedOn="{StaticResource SecondaryTextStyle}">
                         <Style.Triggers>
                             <DataTrigger Binding="{Binding HasSeenConcept}" Value="True">
                                 <Setter Property="Visibility" Value="Collapsed" />
@@ -47,7 +47,7 @@
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Text="{Binding Concept}" FontSize="16" TextWrapping="Wrap"
+                                    <TextBlock Text="{Binding Concept}" Style="{StaticResource ConceptTextStyle}" TextWrapping="Wrap"
                                                VerticalAlignment="Center" Margin="0,0,8,0" />
                                     <StackPanel Grid.Column="1" Orientation="Horizontal"
                                                 HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -66,10 +66,10 @@
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
               </ScrollViewer>
-              <TextBlock Text="{Binding Localization[Concepts.AllSeen]}"
+              <TextBlock Text="{Binding Localization[Concepts.AllSeen]}" Style="{StaticResource SecondaryTextStyle}"
                          TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Margin="12"
                          Visibility="{Binding AllConceptsSeen, Converter={StaticResource BooleanToVisibility}}" />
-              <TextBlock Text="{Binding Localization[Concepts.Empty]}"
+              <TextBlock Text="{Binding Localization[Concepts.Empty]}" Style="{StaticResource SecondaryTextStyle}"
                          TextWrapping="Wrap" TextAlignment="Center" VerticalAlignment="Center" Margin="12"
                          Visibility="{Binding IsConceptListEmpty, Converter={StaticResource BooleanToVisibility}}" />
             </Grid>

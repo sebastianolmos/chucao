@@ -3,13 +3,13 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              IsVisibleChanged="View_IsVisibleChanged">
     <StackPanel>
-        <TextBlock Text="{Binding Localization[Concepts.AddSet]}" FontSize="22"
-                   FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,0,0,12" />
-        <TextBlock Text="{Binding Localization[Concepts.SetInstructions]}"
+        <TextBlock Text="{Binding Localization[Concepts.AddSet]}" Style="{StaticResource DialogTitleTextStyle}"
+                    TextWrapping="Wrap" Margin="0,0,0,12" />
+        <TextBlock Text="{Binding Localization[Concepts.SetInstructions]}" Style="{StaticResource SecondaryTextStyle}"
                    TextWrapping="Wrap" Margin="0,0,0,12" />
         <Label Content="{Binding Localization[Concepts.SetInput]}"
                Target="{Binding ElementName=ConceptSetInput}" Padding="0,0,0,6" />
-        <TextBox x:Name="ConceptSetInput" Height="180" Padding="8" FontSize="16"
+        <TextBox x:Name="ConceptSetInput" Height="180" Padding="8"
                  AcceptsReturn="True" TextWrapping="Wrap"
                  VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled"
                  Text="{Binding DraftConceptSet, UpdateSourceTrigger=PropertyChanged}"

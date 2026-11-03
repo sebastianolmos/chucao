@@ -114,13 +114,13 @@ public partial class MainWindow : Window
     private static bool IsSettingsError(Exception exception) =>
         exception is IOException or InvalidDataException or UnauthorizedAccessException or CsvHelperException;
 
-    private void ShowSettingsWarning(string key) => MessageBox.Show(
-        this, viewModel.Localization[key], viewModel.Localization["Window.Title"],
-        MessageBoxButton.OK, MessageBoxImage.Warning);
+    private void ShowSettingsWarning(string key) => ShowWarning(viewModel.Localization[key]);
 
-    private void ShowListWarning(string key, string? details) => MessageBox.Show(
-        this, viewModel.Localization[key] + (details is null ? "" : Environment.NewLine + details),
-        viewModel.Localization["Window.Title"], MessageBoxButton.OK, MessageBoxImage.Warning);
+    private void ShowListWarning(string key, string? details) => ShowWarning(
+        viewModel.Localization[key] + (details is null ? "" : Environment.NewLine + details));
+
+    private void ShowWarning(string message) =>
+        new NoticeWindow(viewModel.Localization, message) { Owner = this }.ShowDialog();
 
     private void AdditionNoticeTimer_Tick(object? sender, EventArgs e)
     {

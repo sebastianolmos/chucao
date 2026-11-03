@@ -6,11 +6,26 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <!-- Replace these source paths when the final artwork is ready. -->
+    <ApplicationImageFile>..\..\Assets\Images\pequeno.png</ApplicationImageFile>
+    <ApplicationIconFile>..\..\Assets\Images\pequeno.ico</ApplicationIconFile>
+    <ApplicationIcon Condition="Exists('$(ApplicationIconFile)')">$(ApplicationIconFile)</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.1.0" />
     <EmbeddedResource Include="Resources\Translations.csv" />
+    <!-- Stable resource aliases keep the views independent of the source filenames.
+         The ignored preview files may be absent in another checkout. -->
+    <Resource Include="$(ApplicationImageFile)" Link="Assets\Images\Application.png"
+              Condition="Exists('$(ApplicationImageFile)')" />
+    <Resource Include="$(ApplicationIconFile)" Link="Assets\Images\Application.ico"
+              Condition="Exists('$(ApplicationIconFile)')" />
+    <Resource Include="..\..\Assets\Fonts\Comfortaa-Light.ttf" Link="Assets\Fonts\Comfortaa-Light.ttf" />
+    <Resource Include="..\..\Assets\Fonts\Comfortaa-Bold.ttf" Link="Assets\Fonts\Comfortaa-Bold.ttf" />
+    <Resource Include="..\..\Assets\Fonts\Comfortaa-Regular.ttf" Link="Assets\Fonts\Comfortaa-Regular.ttf" />
+    <None Include="..\..\Assets\Fonts\OFL.txt" Link="Assets\Fonts\OFL.txt"
+          CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
