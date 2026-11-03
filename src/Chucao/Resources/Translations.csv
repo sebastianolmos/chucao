@@ -30,7 +30,6 @@ Timer.Start,Empezar,Start
 Timer.Pause,Pausar,Pause
 Timer.Resume,Continuar,Resume
 Timer.Restart,Empezar de nuevo,Start again
-Timer.Finished,Tiempo terminado.,Time is up.
 Timer.Remaining,Tiempo restante,Time remaining
 Timer.SettingsReadError,No se pudo leer la duración del temporizador. Se usará 1 minuto y se conservará el archivo de preferencias.,The timer duration could not be read. One minute will be used and the settings file will be preserved.
 Timer.SettingsWriteError,No se pudo guardar la duración. Comprueba el archivo de preferencias y vuelve a intentarlo.,The duration could not be saved. Check the settings file and try again.

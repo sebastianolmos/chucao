@@ -31,6 +31,8 @@ internal static class TimerChecks
         var localization = new LocalizationService();
         var timer = new TimerViewModel(localization, clock);
         timer.Prepare(1, "Concepto");
+        check(timer.Duration == TimeSpan.FromMinutes(1) && timer.Elapsed == TimeSpan.Zero,
+            "Preparing a timer resets the shared animation clock");
         check(timer.DisplayTime == "01:00" && !timer.IsRunning && timer.Concept == "Concepto",
             "Preparing a timer displays the configured duration without starting");
         timer.ToggleCommand.Execute(null);
@@ -42,6 +44,7 @@ internal static class TimerChecks
         clock.Advance(TimeSpan.FromMinutes(2));
         timer.Update();
         check(!timer.IsRunning && timer.DisplayTime == "00:40", "Pausing captures elapsed time and excludes time spent paused");
+        check(timer.Elapsed == TimeSpan.FromSeconds(20), "The animation clock excludes paused time too");
         timer.ToggleCommand.Execute(null);
         clock.Advance(TimeSpan.FromSeconds(39.2));
         timer.Update();

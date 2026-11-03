@@ -184,6 +184,7 @@ try
     ConceptSetChecks.Run(directory, Check);
     RandomConceptChecks.Run(directory, Check);
     TimerChecks.Run(directory, Check);
+    BirdFlightChecks.Run(Check);
     Console.WriteLine($"{passed} checks passed.");
 }
 finally

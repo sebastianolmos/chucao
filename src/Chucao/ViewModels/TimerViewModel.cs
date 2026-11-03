@@ -32,6 +32,8 @@ public sealed class TimerViewModel : INotifyPropertyChanged
     public bool IsRunning { get; private set; }
     public bool IsFinished => remaining == TimeSpan.Zero;
     public TimeSpan Remaining => remaining;
+    public TimeSpan Duration => duration;
+    public TimeSpan Elapsed => duration - remaining;
     public string DisplayTime
     {
         get
@@ -97,6 +99,8 @@ public sealed class TimerViewModel : INotifyPropertyChanged
         Notify(nameof(IsRunning));
         Notify(nameof(IsFinished));
         Notify(nameof(Remaining));
+        Notify(nameof(Duration));
+        Notify(nameof(Elapsed));
         Notify(nameof(DisplayTime));
         Notify(nameof(ActionText));
     }

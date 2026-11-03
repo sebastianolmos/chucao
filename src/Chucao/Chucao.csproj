@@ -9,12 +9,17 @@
     <!-- Replace these source paths when the final artwork is ready. -->
     <ApplicationImageFile>..\..\Assets\Images\pequeno.png</ApplicationImageFile>
     <ApplicationIconFile>..\..\Assets\Images\pequeno.ico</ApplicationIconFile>
+    <TimerCompletionSoundFile>..\..\Assets\Sounds\bird.wav</TimerCompletionSoundFile>
     <ApplicationIcon Condition="Exists('$(ApplicationIconFile)')">$(ApplicationIconFile)</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="33.1.0" />
     <EmbeddedResource Include="Resources\Translations.csv" />
+    <!-- MediaPlayer reads a local file; include the optional preview sound in build/publish output. -->
+    <Content Include="$(TimerCompletionSoundFile)" Link="Assets\Sounds\TimerFinished.wav"
+             CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
+             Condition="Exists('$(TimerCompletionSoundFile)')" />
     <!-- Stable resource aliases keep the views independent of the source filenames.
          The ignored preview files may be absent in another checkout. -->
     <Resource Include="$(ApplicationImageFile)" Link="Assets\Images\Application.png"
