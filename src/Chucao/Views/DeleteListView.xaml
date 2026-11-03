@@ -7,9 +7,9 @@
                     TextWrapping="Wrap" />
         <TextBlock Text="{Binding SelectedList}" Style="{StaticResource ConceptTextStyle}" TextWrapping="Wrap" Margin="0,12,0,24" />
         <WrapPanel HorizontalAlignment="Right">
-            <Button x:Name="CancelDeleteButton" Content="{Binding Localization[Common.Cancel]}"
-                    Padding="12,8" Margin="0,0,8,0" Command="{Binding CancelDialogCommand}" />
-            <Button Content="{Binding Localization[Lists.Delete]}" Padding="12,8"
+            <Button Style="{StaticResource OrangeButtonStyle}" x:Name="CancelDeleteButton" Content="{Binding Localization[Common.Cancel]}"
+                    Padding="12,8" Margin="{DynamicResource DialogActionMargin}" Command="{Binding CancelDialogCommand}" />
+            <Button Margin="{DynamicResource FinalDialogActionMargin}" Style="{StaticResource RedButtonStyle}" Content="{Binding Localization[Lists.Delete]}" Padding="12,8"
                     Command="{Binding ConfirmDeleteCommand}" />
         </WrapPanel>
     </StackPanel>

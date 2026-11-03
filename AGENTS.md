@@ -25,7 +25,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Ubicar vistas y su código visual en `Views`, estado y acciones de pantalla en `ViewModels`, acceso a archivos en `Services` y traducciones en `Resources`. Crear `Models` y `Assets` solo cuando se necesiten.
 - Evitar arquitectura y abstracciones innecesarias.
 - Utilizar nombres de código descriptivos en inglés.
-- Centralizar fuentes, tamaños y colores de texto en `Resources/Typography.xaml`. Usar Comfortaa-Light como texto normal y Comfortaa-Bold como destacado; conservar la fuente de símbolos del engranaje.
+- Centralizar fuentes y tamaños en `Resources/Typography.xaml`, paleta y medidas visuales en `Resources/Palette.xaml`, y plantillas en `Resources/Controls.xaml`. Conservar la fuente de símbolos del engranaje y los ajustes tipográficos existentes.
 - Explicar las decisiones relevantes y los conceptos nuevos de C# o WPF.
 - Aclarar decisiones funcionales ambiguas que afecten al comportamiento o a los datos. Resolver detalles rutinarios con criterio propio.
 

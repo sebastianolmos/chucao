@@ -33,7 +33,7 @@
                 </TextBlock.Style>
             </TextBlock>
         </StackPanel>
-        <Border Grid.Row="1" BorderBrush="#B8B8B8" BorderThickness="1"
+        <Border Grid.Row="1" BorderBrush="{DynamicResource TextBrush}" BorderThickness="1"
                 CornerRadius="6" Padding="10" Margin="0,16,0,16">
             <Grid>
               <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
@@ -41,7 +41,7 @@
                               AutomationProperties.Name="{Binding Localization[Concepts.Title]}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Border BorderBrush="#E0E0E0" BorderThickness="0,0,0,1" Padding="6,10">
+                            <Border BorderBrush="{DynamicResource TextBrush}" BorderThickness="0,0,0,1" Padding="6,10">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -51,12 +51,12 @@
                                                VerticalAlignment="Center" Margin="0,0,8,0" />
                                     <StackPanel Grid.Column="1" Orientation="Horizontal"
                                                 HorizontalAlignment="Right" VerticalAlignment="Center">
-                                        <Button Content="{Binding DataContext.Localization[Concepts.MarkSeen], RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                        <Button Style="{StaticResource OrangeButtonStyle}" Content="{Binding DataContext.Localization[Concepts.MarkSeen], RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 ToolTip="{Binding DataContext.Localization[Concepts.MarkSeenDescription], RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 AutomationProperties.Name="{Binding DataContext.Localization[Concepts.MarkSeenDescription], RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 Command="{Binding DataContext.MarkConceptAsSeenCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                CommandParameter="{Binding}" Padding="6,5" Margin="0,0,6,0" />
-                                        <Button Content="{Binding DataContext.Localization[Concepts.Delete], RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                CommandParameter="{Binding}" Padding="6,5" Margin="{DynamicResource InlineActionMargin}" />
+                                        <Button Margin="{DynamicResource FinalDialogActionMargin}" Style="{StaticResource RedButtonStyle}" Content="{Binding DataContext.Localization[Concepts.Delete], RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 Command="{Binding DataContext.DeleteConceptCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                                 CommandParameter="{Binding}" Padding="6,5" />
                                     </StackPanel>
@@ -75,23 +75,23 @@
             </Grid>
         </Border>
         <StackPanel Grid.Row="2">
-            <Grid Margin="0,0,0,16">
+            <Grid Margin="{DynamicResource ActionRowMargin}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" Command="{Binding AddConceptCommand}"
-                        Padding="8" Margin="0,0,4,0">
+                <Button Style="{StaticResource GreenButtonStyle}" Grid.Column="0" Command="{Binding AddConceptCommand}"
+                        Padding="8" Margin="{DynamicResource LeftActionMargin}">
                     <TextBlock Text="{Binding Localization[Concepts.Add]}"
                                TextWrapping="Wrap" TextAlignment="Center" />
                 </Button>
-                <Button Grid.Column="1" Command="{Binding AddConceptSetCommand}" Padding="8" Margin="4,0">
+                <Button Style="{StaticResource BlueButtonStyle}" Grid.Column="1" Command="{Binding AddConceptSetCommand}" Padding="8" Margin="{DynamicResource MiddleActionMargin}">
                     <TextBlock Text="{Binding Localization[Concepts.AddSet]}"
                                TextWrapping="Wrap" TextAlignment="Center" />
                 </Button>
-                <Button Grid.Column="2" Command="{Binding ResetListCommand}"
-                        Padding="8" Margin="4,0,0,0">
+                <Button Style="{StaticResource PinkButtonStyle}" Grid.Column="2" Command="{Binding ResetListCommand}"
+                        Padding="8" Margin="{DynamicResource RightActionMargin}">
                     <TextBlock Text="{Binding Localization[Lists.Reset]}"
                                TextWrapping="Wrap" TextAlignment="Center" />
                 </Button>
@@ -101,13 +101,13 @@
                     <ColumnDefinition Width="2*" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
-                <Button Command="{Binding SelectRandomConceptCommand}" IsEnabled="{Binding CanSelectRandomConcept}"
-                        Padding="8" Margin="0,0,4,0" MinHeight="48">
+                <Button Style="{StaticResource PurpleButtonStyle}" Command="{Binding SelectRandomConceptCommand}" IsEnabled="{Binding CanSelectRandomConcept}"
+                        Padding="8" Margin="{DynamicResource LeftActionMargin}" MinHeight="48">
                     <TextBlock Text="{Binding Localization[Concepts.SelectRandom]}"
                                TextWrapping="Wrap" TextAlignment="Center" />
                 </Button>
-                <Button Grid.Column="1" Command="{Binding DeleteListCommand}"
-                        Padding="8" Margin="4,0,0,0" MinHeight="48">
+                <Button Style="{StaticResource RedButtonStyle}" Grid.Column="1" Command="{Binding DeleteListCommand}"
+                        Padding="8" Margin="{DynamicResource RightActionMargin}" MinHeight="48">
                     <TextBlock Text="{Binding Localization[Lists.Delete]}"
                                TextWrapping="Wrap" TextAlignment="Center" />
                 </Button>

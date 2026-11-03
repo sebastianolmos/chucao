@@ -70,10 +70,10 @@ Para cambiar dimensiones de botones:
 
 | Elemento | Lugar | Propiedades |
 |---|---|---|
-| Tarjetas de listas | `Views/ListsView.xaml`, botón del `DataTemplate` | `MinHeight="60"`, `Padding="8"`, `Margin="4"`; el ancho lo reparte `UniformGrid Columns="2"`. |
+| Tarjetas de listas | `Views/ListsView.xaml`, botón del `DataTemplate` | `MinHeight="50"`, `Padding="8"`, margen `ListCardMargin` de `Palette.xaml`; el ancho lo reparte `UniformGrid Columns="2"`. |
 | Agregar lista (+) | `Views/ListsView.xaml`, `AddListButton` | `MinHeight="40"` y `Margin`; se puede añadir `Padding`, `Height` o `Width`. El tamaño del símbolo se configura en `AddListFontSize` de `Typography.xaml`. |
 | Temporizador principal | `Views/ListsView.xaml`, `TimerButton` | `Padding="12,10"` y `Margin="0,16,0,0"`; se puede fijar `Height` o `MinHeight`. |
-| Otros botones | Su archivo de `Views` y el estilo implícito `Button` de `Typography.xaml` | `Width`, `Height`, `MinWidth`, `MinHeight`, `Padding` y `Margin`. Los valores locales de las vistas tienen prioridad sobre el estilo. |
+| Otros botones | Su archivo de `Views` y los estilos de `Controls.xaml` | `Width`, `Height`, `MinWidth`, `MinHeight`, `Padding` y `Margin`. Los valores locales de las vistas tienen prioridad sobre el estilo. |
 
 `MinHeight` es una altura mínima y permite crecer con el contenido; `Height` fija la altura. `Padding` es el espacio interior y `Margin` el exterior. Las medidas son unidades de WPF. Se verificó que WPF decodifica los siete tamaños del ICO y que Git ignora ambos archivos temporales. No se ejecutó build ni revisión visual de la aplicación.
 
@@ -104,11 +104,48 @@ Los tamaños se configuran en las claves `...FontSize` de ese mismo diccionario:
 | Botón + e icono del engranaje | `AddListFontSize`, `IconFontSize` | 24, 18 |
 | Ayudas y avisos temporales | `HelpFontSize`, `NoticeFontSize` | 12, 12 |
 
-Los colores de texto se centralizan en `BodyTextBrush`, `TitleTextBrush`, `SecondaryTextBrush`, `ButtonTextBrush`, `InputTextBrush` y `NoticeTextBrush`, inicialmente negros. Los estados deshabilitados de botones conservan el color del sistema. Cada estilo de grupo puede ampliar o reemplazar propiedades como `Foreground`, `FontWeight`, `FontStyle` o `FontStretch`; las vistas solo asignan su estilo mediante `Style`. Esta tarea no cambia superficies ni bordes.
+Los colores de texto se centralizan en `BodyTextBrush`, `TitleTextBrush`, `SecondaryTextBrush`, `ButtonTextBrush`, `InputTextBrush` y `NoticeTextBrush`, que toman `TextColor` de `Palette.xaml` (#5C2D00). Cada estilo de grupo puede ampliar o reemplazar propiedades como `Foreground`, `FontWeight`, `FontStyle` o `FontStretch`; las vistas asignan su estilo mediante `Style`. La geometría, los fondos y las plantillas de controles están separados en `Controls.xaml` y `Palette.xaml`.
 
 Los avisos de error usan `Views/NoticeWindow.xaml` para que su contenido y botón también adopten Comfortaa. El engranaje sigue usando Segoe MDL2 Assets, una fuente de símbolos. La barra de título nativa y los menús de Windows conservan su tipografía de sistema; personalizarlos requiere trabajar el marco por separado.
 
 Se comprobaron los nombres internos y la resolución de las caras Light/Bold con WPF sobre los archivos originales, además del XML y las referencias de estilos. No se ejecutó build ni revisión visual de la aplicación: después de compilar hay que comprobar texto en ambos idiomas, diálogos, desplegables, botones deshabilitados, teclado, cifras y posibles recortes dentro de la ventana fija.
+
+## Estilo visual y ajustes
+
+Los recursos se cargan en este orden desde `App.xaml`: `Palette.xaml` (colores y medidas), `Typography.xaml` (fuentes y tamaños) y `Controls.xaml` (plantillas y variantes de controles). No se modificaron las reglas de práctica, el CSV ni las preferencias.
+
+El fondo de las vistas y cuadros es #FFEDC2, el texto y los contornos son #5C2D00 y el oscurecimiento de los formularios es #805C2D00: conserva el mismo alfa 80 que el fondo oscuro anterior. El marco y la barra de título nativos usan #FFBF4F, con texto #5C2D00, mediante `Views/NativeWindowColors.cs`. Mantienen sus controles y comportamiento estándar. Estos atributos se aplican desde Windows 11 build 22000; en versiones anteriores se conserva el marco del sistema. Véase la [documentación de atributos DWM](https://learn.microsoft.com/en-us/windows/win32/api/dwmapi/ne-dwmapi-dwmwindowattribute).
+
+Los botones comparten contorno de una unidad, esquinas ligeramente redondeadas, indicador de foco de teclado y sombra marrón únicamente hacia la derecha y abajo. La sombra es una silueta desplazada, no un desenfoque alrededor del botón. Cada acción utiliza una variante semántica (verde, roja, morada, azul, rosa, naranja, celeste o amarilla). El botón de idioma elige sus colores y hover según `Localization.CurrentLanguage`. Los deshabilitados conservan la paleta y reducen su opacidad.
+
+| Qué ajustar | Archivo y recurso |
+|---|---|
+| Color de todo el texto y de los bordes | `Resources/Palette.xaml`: `TextColor`. Los pinceles tipográficos apuntan a ese color. |
+| Marco y barra de título | `WindowFrameColor`, `WindowCaptionColor`. La integración nativa está en `Views/NativeWindowColors.cs`. |
+| Fondo de vistas y cuadros | `ViewBackgroundColor`. |
+| Color y transparencia del oscurecimiento | `OverlayColor`; formato #AARRGGBB. El primer par controla la opacidad. |
+| Color de cada botón y su hover | Pares `GreenColor`/`GreenHoverColor`, `RedColor`/`RedHoverColor`, `PurpleColor`/`PurpleHoverColor`, `BlueColor`/`BlueHoverColor`, `PinkColor`/`PinkHoverColor`, `OrangeColor`/`OrangeHoverColor`, `BackColor`/`BackHoverColor`, `SettingsColor`/`SettingsHoverColor` y `ListCardColor`/`ListCardHoverColor`. |
+| Botón EN (estando en español) | `LanguageToEnglishColor` y `LanguageToEnglishHoverColor`. |
+| Botón ES (estando en inglés) | `LanguageToSpanishColor` y `LanguageToSpanishHoverColor`. |
+| Redondeado de todos los botones | `ButtonCornerRadius`, inicialmente 6. |
+| Grosor del contorno | `ControlBorderThickness`, inicialmente 1. |
+| Tamaño/desplazamiento de la sombra | `ButtonShadowOffsetX` y `ButtonShadowOffsetY`, inicialmente 3 y 3. Aumentarlos exige dejar más espacio entre controles. No hay radio de desenfoque porque la sombra es sólida. |
+| Espacio interior general | `DefaultButtonPadding`, inicialmente 12,8; los `Padding` locales de las vistas prevalecen. |
+| Separación de tarjetas | `ListCardMargin`, inicialmente 6 por lado. |
+| Separación de acciones en dos/tres columnas | `LeftActionMargin`, `MiddleActionMargin` y `RightActionMargin`. Los lados internos de 6 + 6 dejan 12 entre botones. |
+| Separación entre filas de acciones | `ActionRowMargin`, inicialmente 0,0,0,16. |
+| Separación entre Visto y Eliminar | `InlineActionMargin`, con 10 a la derecha. |
+| Separación de botones de formularios | `DialogActionMargin` y `FinalDialogActionMargin`, con espacio extra debajo para la sombra. |
+| Aspecto de controles deshabilitados | `DisabledControlOpacity`, inicialmente 0.5. |
+| Deslizador y fondo de desplazamiento | `ScrollThumbColor` (#FF931F), `ScrollTrackColor` (#FFBF4F) y `ScrollBarThickness` (14). Su plantilla está en `Controls.xaml`. |
+| Campos de texto | `InputColor` (blanco), `InputCornerRadius` y la plantilla `TextBox` de `Controls.xaml`. |
+| Selector y opciones de minutos | Las plantillas `ComboBox` y `ComboBoxItem` de `Controls.xaml`; usan `SettingsColor`, `SettingsHoverColor`, `ViewBackgroundColor` y `TextColor`. |
+| Espacio de futura animación | `AnimationColor` (#94D6FF) y `AnimationCanvasSize` (200). El cuadrado de `TimerView.xaml` se reduce proporcionalmente al espacio disponible. |
+| Tamaño y ubicación de un botón concreto | `Width`, `Height`, `MinHeight`, `Padding` y `Margin` del botón en su archivo de `Views`. |
+
+Los márgenes siguen el orden izquierda, arriba, derecha, abajo. Los valores de las vistas tienen prioridad sobre los setters de los estilos. Los colores se comparten mediante `DynamicResource`; las variantes de botones heredan de `AppButtonStyle`. Para crear otra variante, basarla en ese estilo y definir `Background` y su trigger `IsMouseOver`.
+
+Se cargaron los tres diccionarios con WPF y se instanciaron las plantillas de botones, ScrollBar en ambas orientaciones y ComboBox sin abrir ventanas. Se comprobaron los colores normales de las variantes y el color de selección de minutos. No se ejecutó la build, las pruebas de la aplicación ni una revisión visual. Después de compilar hay que revisar hover en ambos idiomas, foco/teclado, desplazamiento con rueda y arrastre, selección de minutos, sombras sin recortes, los cuadros y el marco activo/inactivo en Windows 11.
 
 ## Funciones previstas
 
@@ -205,3 +242,5 @@ The timer is accessible from the home screen or a selected concept. Settings (to
 Typography is centralized in src/Chucao/Resources/Typography.xaml. Comfortaa-Light.ttf is the regular role and Comfortaa-Bold.ttf is the emphasis role; Chucao.csproj links these two files from the repository's Assets/Fonts directory as WPF resources and distributes OFL.txt. Shared size keys and text brushes cover all UI groups. Custom WPF notices use the same font. The gear retains its icon font, and native Windows captions retain system typography. No build or visual app review was performed for this change.
 
 The temporary bird PNG and generated multi-size ICO are ignored by Git. Chucao.csproj selects their source paths with ApplicationImageFile and ApplicationIconFile; stable internal resource aliases avoid view changes when replacing the artwork. The PNG appears at 96 by 96 WPF units above Chucao, configured in ListsView.xaml. Missing preview files are optional. Convert-PngToIcon.ps1 provides PNG-to-ICO conversion without modifying the source image. No build or visual application review was performed.
+
+Visual styling now uses Palette.xaml for colors and geometry, Typography.xaml for fonts and Controls.xaml for shared control templates. Buttons have rounded corners, brown outlines and solid shadows offset right/down; named variants provide the requested normal and hover colors. Scrollbars, text fields, minute options and modal backgrounds use the shared palette. NativeWindowColors applies the requested frame, caption and caption-text colors on supported Windows 11 versions without replacing native window controls. Only headless WPF dictionary/template checks were run; no application build or visual review was performed.

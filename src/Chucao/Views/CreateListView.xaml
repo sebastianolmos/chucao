@@ -13,9 +13,9 @@
         <TextBlock Text="{Binding Localization[Lists.NameLimit]}" Style="{StaticResource SecondaryTextStyle}"
                    TextWrapping="Wrap" Margin="0,6,0,16" />
         <WrapPanel HorizontalAlignment="Right">
-            <Button Content="{Binding Localization[Common.Cancel]}" Padding="12,8"
-                    Margin="0,0,8,0" Command="{Binding CancelDialogCommand}" />
-            <Button Content="{Binding Localization[Common.Confirm]}" Padding="12,8"
+            <Button Style="{StaticResource RedButtonStyle}" Content="{Binding Localization[Common.Cancel]}" Padding="12,8"
+                    Margin="{DynamicResource DialogActionMargin}" Command="{Binding CancelDialogCommand}" />
+            <Button Margin="{DynamicResource FinalDialogActionMargin}" Style="{StaticResource GreenButtonStyle}" Content="{Binding Localization[Common.Confirm]}" Padding="12,8"
                     IsDefault="True" IsEnabled="{Binding CanCreateList}"
                     Command="{Binding ConfirmCreateCommand}" />
         </WrapPanel>

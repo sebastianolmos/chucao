@@ -8,6 +8,7 @@ public partial class NoticeWindow : Window
     public NoticeWindow(LocalizationService localization, string message)
     {
         InitializeComponent();
+        NativeWindowColors.Attach(this);
         DataContext = localization;
         MessageText.Text = message;
     }

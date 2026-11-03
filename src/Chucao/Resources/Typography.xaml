@@ -33,14 +33,15 @@
     <sys:Double x:Key="NoticeFontSize">12</sys:Double>
 
     <!-- Text colors; surfaces and borders remain separate from typography. -->
-    <SolidColorBrush x:Key="BodyTextBrush" Color="#000000" />
-    <SolidColorBrush x:Key="TitleTextBrush" Color="#000000" />
-    <SolidColorBrush x:Key="SecondaryTextBrush" Color="#000000" />
-    <SolidColorBrush x:Key="ButtonTextBrush" Color="#000000" />
-    <SolidColorBrush x:Key="InputTextBrush" Color="#000000" />
-    <SolidColorBrush x:Key="NoticeTextBrush" Color="#000000" />
+    <SolidColorBrush x:Key="BodyTextBrush" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="TitleTextBrush" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="SecondaryTextBrush" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="ButtonTextBrush" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="InputTextBrush" Color="{DynamicResource TextColor}" />
+    <SolidColorBrush x:Key="NoticeTextBrush" Color="{DynamicResource TextColor}" />
 
     <Style x:Key="AppWindowStyle" TargetType="Window">
+        <Setter Property="Background" Value="{DynamicResource ViewBackgroundBrush}" />
         <Setter Property="Icon" Value="{DynamicResource ApplicationWindowIcon}" />
         <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
         <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
@@ -114,33 +115,25 @@
         <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
         <Setter Property="FontSize" Value="{DynamicResource ListCardFontSize}" />
     </Style>
-    <Style TargetType="Button">
+    <Style x:Key="TypographyButtonStyle" TargetType="Button">
         <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
         <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
         <Setter Property="FontSize" Value="{DynamicResource ButtonFontSize}" />
         <Setter Property="Foreground" Value="{DynamicResource ButtonTextBrush}" />
-        <Style.Triggers>
-            <Trigger Property="IsEnabled" Value="False">
-                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />
-            </Trigger>
-        </Style.Triggers>
     </Style>
-    <Style x:Key="AddListButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
-        <Setter Property="FontSize" Value="{DynamicResource AddListFontSize}" />
-    </Style>
-    <Style TargetType="TextBox">
+    <Style x:Key="TypographyTextBoxStyle" TargetType="TextBox">
         <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
         <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
         <Setter Property="FontSize" Value="{DynamicResource InputFontSize}" />
         <Setter Property="Foreground" Value="{DynamicResource InputTextBrush}" />
     </Style>
-    <Style TargetType="ComboBox">
+    <Style x:Key="TypographyComboBoxStyle" TargetType="ComboBox">
         <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
         <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
         <Setter Property="FontSize" Value="{DynamicResource MinutesFontSize}" />
         <Setter Property="Foreground" Value="{DynamicResource InputTextBrush}" />
     </Style>
-    <Style TargetType="ComboBoxItem">
+    <Style x:Key="TypographyComboBoxItemStyle" TargetType="ComboBoxItem">
         <Setter Property="FontFamily" Value="{DynamicResource AppFontFamily}" />
         <Setter Property="FontWeight" Value="{DynamicResource RegularFontWeight}" />
         <Setter Property="FontSize" Value="{DynamicResource MinutesFontSize}" />

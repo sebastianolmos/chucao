@@ -21,6 +21,7 @@ public partial class MainWindow : Window
     {
         viewModel = new MainViewModel(settings: settings);
         InitializeComponent();
+        NativeWindowColors.Attach(this);
         DataContext = viewModel;
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
         viewModel.WarningRequested += ShowListWarning;

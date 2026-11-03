@@ -12,7 +12,7 @@
                   AutomationProperties.Name="{Binding Localization[Timer.Duration]}" />
         <TextBlock Text="{Binding Localization[Timer.DurationHelp]}" Style="{StaticResource SecondaryTextStyle}"
                    TextWrapping="Wrap" Margin="0,8,0,24" />
-        <Button Content="{Binding Localization[Lists.Back]}" Command="{Binding SaveSettingsCommand}"
+        <Button Margin="{DynamicResource FinalDialogActionMargin}" Style="{StaticResource BackButtonStyle}" Content="{Binding Localization[Lists.Back]}" Command="{Binding SaveSettingsCommand}"
                 IsEnabled="{Binding CanSaveTimerSettings}" Padding="12,8" HorizontalAlignment="Right" />
     </StackPanel>
 </UserControl>

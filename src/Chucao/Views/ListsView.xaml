@@ -27,7 +27,7 @@
             <TextBlock Text="{Binding Localization[Practice.Subtitle]}" Style="{StaticResource SubtitleTextStyle}"
                        Margin="0,4,0,0" TextAlignment="Center" TextWrapping="Wrap" />
         </StackPanel>
-        <Border Grid.Row="1" BorderBrush="#B8B8B8" BorderThickness="1" CornerRadius="6" Padding="12">
+        <Border Grid.Row="1" BorderBrush="{DynamicResource TextBrush}" BorderThickness="1" CornerRadius="6" Padding="12">
             <ScrollViewer x:Name="ListsScrollViewer" VerticalScrollBarVisibility="Auto"
                           HorizontalScrollBarVisibility="Disabled">
                 <StackPanel>
@@ -39,7 +39,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <Button Margin="4" Padding="8" MinHeight="50"
+                                <Button Style="{StaticResource ListCardButtonStyle}" Margin="{DynamicResource ListCardMargin}" Padding="8" MinHeight="50"
                                         HorizontalContentAlignment="Center" VerticalContentAlignment="Center"
                                         Command="{Binding DataContext.OpenListCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                                         CommandParameter="{Binding}">
@@ -49,14 +49,14 @@
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                     <Button x:Name="AddListButton" Content="{Binding Localization[Lists.AddSymbol]}"
-                            Margin="4,10,4,4"
+                            Margin="{DynamicResource AddListMargin}"
                             ToolTip="{Binding Localization[Lists.Create]}"
                             AutomationProperties.Name="{Binding Localization[Lists.Create]}"
                             Style="{StaticResource AddListButtonStyle}" MinHeight="40" Width="60" Command="{Binding CreateListCommand}" />
                 </StackPanel>
             </ScrollViewer>
         </Border>
-        <Button x:Name="TimerButton" Grid.Row="2" Content="{Binding Localization[Timer.Title]}"
+        <Button Style="{StaticResource PurpleButtonStyle}" x:Name="TimerButton" Grid.Row="2" Content="{Binding Localization[Timer.Title]}"
                 Command="{Binding OpenTimerCommand}" Width="120" Padding="12,10" Margin="0,16,0,0" />
     </Grid>
 </UserControl>

@@ -12,9 +12,9 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <Button x:Name="ReturnButton" Content="{Binding Localization[Lists.Back]}"
-                    Command="{Binding CancelDialogCommand}" Padding="8" Margin="0,0,4,0" />
-            <Button Grid.Column="1" Command="{Binding OpenConceptTimerCommand}" Padding="8" Margin="4,0,0,0">
+            <Button Style="{StaticResource BackButtonStyle}" x:Name="ReturnButton" Content="{Binding Localization[Lists.Back]}"
+                    Command="{Binding CancelDialogCommand}" Padding="8" Margin="{DynamicResource LeftActionMargin}" />
+            <Button Style="{StaticResource PurpleButtonStyle}" Grid.Column="1" Command="{Binding OpenConceptTimerCommand}" Padding="8" Margin="{DynamicResource RightActionMargin}">
                 <TextBlock Text="{Binding Localization[Concepts.OpenTimer]}"
                            TextWrapping="Wrap" TextAlignment="Center" />
             </Button>
