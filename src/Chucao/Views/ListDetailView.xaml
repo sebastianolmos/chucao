@@ -18,7 +18,7 @@
                 <TextBlock Text="{Binding Localization[Concepts.LastSeen]}" Style="{StaticResource SecondaryTextStyle}"
                            TextAlignment="Center" TextWrapping="Wrap" />
                 <TextBlock Text="{Binding LastSeenConcept}" Style="{StaticResource LastSeenTextStyle}"
-                           TextAlignment="Center" TextWrapping="Wrap" />
+                           TextAlignment="Center" TextWrapping="Wrap" Margin="0,12,0,0" />
             </StackPanel>
             <TextBlock Text="{Binding Localization[Concepts.NoneSeen]}" Margin="0,8,0,0"
                        TextAlignment="Center" TextWrapping="Wrap">

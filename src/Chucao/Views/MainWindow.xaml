@@ -24,6 +24,9 @@
                         Command="{Binding BackCommand}" HorizontalAlignment="Left"
                         Padding="12,6" MinHeight="36"
                         Visibility="{Binding IsListDetailVisible, Converter={StaticResource BooleanToVisibility}}" />
+                <Button Content="{Binding Localization[Lists.Back]}" Command="{Binding ReturnFromTimerCommand}"
+                        HorizontalAlignment="Left" Padding="12,6" MinHeight="36"
+                        Visibility="{Binding IsTimerVisible, Converter={StaticResource BooleanToVisibility}}" />
                 <Button Command="{Binding OpenSettingsCommand}" HorizontalAlignment="Left"
                         Padding="12,6" MinWidth="48" MinHeight="36"
                         Visibility="{Binding IsListsVisible, Converter={StaticResource BooleanToVisibility}}"

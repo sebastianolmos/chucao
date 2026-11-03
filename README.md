@@ -37,6 +37,10 @@ Los nombres visibles admiten caracteres como `/`, `:` o `?`: el archivo usa `lis
 
 ## Organización del código
 
+En el temporizador, «Volver» está en la esquina superior izquierda, frente al selector de idioma. El botón de iniciar/pausar/continuar queda centrado abajo con `Width="120"`, en `Views/TimerView.xaml` (`StartButton`). La fila flexible reservada para la animación absorbe el espacio liberado y desplaza hacia abajo el concepto y las cifras.
+
+La distancia entre «Último concepto visto» y el texto del concepto se ajusta en `Views/ListDetailView.xaml`, en el `TextBlock` enlazado a `LastSeenConcept`: `Margin="0,12,0,0"`. El segundo valor es la separación superior, actualmente 12 unidades de WPF.
+
 - `src/Chucao/Views`: ventana contenedora y vistas separadas de listas, detalle, creación y confirmación de eliminación. Sus archivos `.xaml.cs` solo coordinan presentación, foco y desplazamiento, además de conectar el selector de idioma con los servicios existentes.
 - `src/Chucao/ViewModels`: estado de las listas, navegación y formularios en `MainViewModel`; `TimerViewModel` mantiene el estado de la cuenta atrás usando `TimeProvider`; `RelayCommand` conecta los botones con sus acciones mediante `ICommand` de WPF.
 - `src/Chucao/Services`: localización, lectura/escritura de preferencias, persistencia de listas en `ListFileService` y elección entre conceptos disponibles en `ConceptSelectionService`.
