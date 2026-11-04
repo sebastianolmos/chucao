@@ -4,7 +4,7 @@ public enum BirdMotionState { Stopped, Flying }
 
 public readonly record struct BirdFlightFrame(
     int FromIndex, int ToIndex, double FlightProgress, double GrowthProgress,
-    bool FacingLeft, BirdMotionState State);
+    bool FacingRight, BirdMotionState State);
 
 // Visual timing only: no independent clock, window, file access or countdown state.
 public static class BirdFlightTimeline

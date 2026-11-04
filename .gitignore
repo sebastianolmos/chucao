@@ -481,9 +481,5 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 
-# Temporary bird artwork and its generated application icon (local preview only)
-/Assets/Images/pequeno.png
-/Assets/Images/pequeno.ico
-
 # Temporary timer completion sound (local preview only)
 /Assets/Sounds/bird.wav

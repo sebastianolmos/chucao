@@ -6,11 +6,13 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <!-- Replace these source paths when the final artwork is ready. -->
-    <ApplicationImageFile>..\..\Assets\Images\pequeno.png</ApplicationImageFile>
-    <ApplicationIconFile>..\..\Assets\Images\pequeno.ico</ApplicationIconFile>
+    <!-- Source artwork; stable resource aliases are used by the views. -->
+    <ApplicationImageFile>..\..\Assets\Images\stand.png</ApplicationImageFile>
+    <ApplicationIconFile>..\..\Assets\Images\icono.ico</ApplicationIconFile>
+    <BirdFly1ImageFile>..\..\Assets\Images\fly1.png</BirdFly1ImageFile>
+    <BirdFly2ImageFile>..\..\Assets\Images\fly2.png</BirdFly2ImageFile>
     <TimerCompletionSoundFile>..\..\Assets\Sounds\bird.wav</TimerCompletionSoundFile>
-    <ApplicationIcon Condition="Exists('$(ApplicationIconFile)')">$(ApplicationIconFile)</ApplicationIcon>
+    <ApplicationIcon>$(ApplicationIconFile)</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -20,12 +22,11 @@
     <Content Include="$(TimerCompletionSoundFile)" Link="Assets\Sounds\TimerFinished.wav"
              CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest"
              Condition="Exists('$(TimerCompletionSoundFile)')" />
-    <!-- Stable resource aliases keep the views independent of the source filenames.
-         The ignored preview files may be absent in another checkout. -->
-    <Resource Include="$(ApplicationImageFile)" Link="Assets\Images\Application.png"
-              Condition="Exists('$(ApplicationImageFile)')" />
-    <Resource Include="$(ApplicationIconFile)" Link="Assets\Images\Application.ico"
-              Condition="Exists('$(ApplicationIconFile)')" />
+    <Resource Include="$(ApplicationImageFile)" Link="Assets\Images\Application.png" />
+    <Resource Include="$(ApplicationIconFile)" Link="Assets\Images\Application.ico" />
+    <Resource Include="$(BirdFly1ImageFile)" Link="Assets\Images\BirdFly1.png" />
+    <Resource Include="$(BirdFly2ImageFile)" Link="Assets\Images\BirdFly2.png" />
+    <Resource Include="..\..\Assets\Images\tronco.png" Link="Assets\Images\Stump.png" />
     <Resource Include="..\..\Assets\Fonts\Comfortaa-Light.ttf" Link="Assets\Fonts\Comfortaa-Light.ttf" />
     <Resource Include="..\..\Assets\Fonts\Comfortaa-Bold.ttf" Link="Assets\Fonts\Comfortaa-Bold.ttf" />
     <Resource Include="..\..\Assets\Fonts\Comfortaa-Regular.ttf" Link="Assets\Fonts\Comfortaa-Regular.ttf" />

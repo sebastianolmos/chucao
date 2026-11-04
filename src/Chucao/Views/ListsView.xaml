@@ -10,7 +10,7 @@
         </Grid.RowDefinitions>
         <StackPanel Margin="0,0,0,16">
             <Image x:Name="HomeBirdImage" Source="{DynamicResource ApplicationImage}"
-                   Width="96" Height="96" Stretch="Uniform" Margin="0,0,0,8"
+                   Width="140" Stretch="Uniform" Margin="0,0,0,8"
                    HorizontalAlignment="Center" Focusable="False">
                 <Image.Style>
                     <Style TargetType="Image">

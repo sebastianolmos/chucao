@@ -22,8 +22,19 @@
                                        RadiusX="{DynamicResource AnimationCornerRadius}"
                                        RadiusY="{DynamicResource AnimationCornerRadius}" />
                 </Canvas.Clip>
-                <!-- Temporary markers; keep them separate from future scene elements. -->
-                <Canvas x:Name="WaypointLayer" IsHitTestVisible="False" />
+                <!-- Reference scene coordinates (366 x 256), scaled to fill the canvas. -->
+                <Viewbox Width="{Binding ActualWidth, ElementName=AnimationCanvas}"
+                         Height="{Binding ActualHeight, ElementName=AnimationCanvas}"
+                         Stretch="Fill" IsHitTestVisible="False">
+                    <Canvas Width="366" Height="256">
+                        <Rectangle Canvas.Top="55" Width="366" Height="201"
+                                   Fill="{DynamicResource AnimationGroundBrush}" />
+                        <Polygon Points="168,55 208,55 289,256 63,256"
+                                 Fill="{DynamicResource AnimationPathBrush}" />
+                    </Canvas>
+                </Viewbox>
+                <!-- Stumps sit above the landscape and behind the bird. -->
+                <Canvas x:Name="StumpLayer" IsHitTestVisible="False" />
                 <Image x:Name="BirdImage" Source="{DynamicResource ApplicationImage}"
                        Stretch="Uniform" RenderTransformOrigin="0.5,0.5"
                        IsHitTestVisible="False" Focusable="False">

@@ -13,27 +13,21 @@ public partial class App : Application
 {
     protected override void OnStartup(StartupEventArgs e)
     {
-        LoadOptionalImage("ApplicationImage", "Assets/Images/Application.png");
-        LoadOptionalImage("ApplicationWindowIcon", "Assets/Images/Application.ico");
+        LoadImage("ApplicationImage", "Assets/Images/Application.png");
+        LoadImage("ApplicationWindowIcon", "Assets/Images/Application.ico");
+        LoadImage("BirdFly1Image", "Assets/Images/BirdFly1.png");
+        LoadImage("BirdFly2Image", "Assets/Images/BirdFly2.png");
+        LoadImage("StumpImage", "Assets/Images/Stump.png");
         base.OnStartup(e);
     }
 
-    private void LoadOptionalImage(string key, string resourcePath)
+    private void LoadImage(string key, string resourcePath)
     {
-        try
-        {
-            using var stream = GetResourceStream(new Uri("/Chucao;component/" + resourcePath, UriKind.Relative))?.Stream;
-            if (stream is null)
-                return;
-            // BitmapFrame retains the ICO decoder so WPF can choose the appropriate icon size.
-            var image = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
-            image.Freeze();
-            Resources[key] = image;
-        }
-        catch (IOException)
-        {
-            // Ignored local preview images are optional in other checkouts.
-        }
+        using var stream = GetResourceStream(new Uri("/Chucao;component/" + resourcePath, UriKind.Relative))!.Stream;
+        // BitmapFrame retains the ICO decoder so WPF can choose the appropriate icon size.
+        var image = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+        image.Freeze();
+        Resources[key] = image;
     }
 }
 

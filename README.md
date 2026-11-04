@@ -49,22 +49,21 @@ La distancia entre «Último concepto visto» y el texto del concepto se ajusta 
 
 La aplicación arranca desde `Views/MainWindow.xaml`. Los formularios de conceptos están en `Views/CreateConceptView.xaml` y `Views/AddConceptSetView.xaml`. `MainViewModel` procesa las líneas y expone el conteo añadido; `MainWindow.xaml.cs` oculta el aviso con un `DispatcherTimer` de WPF, exclusivo de esta notificación visual. `ListFileService` comprueba los duplicados sobre el CSV actual y guarda el conjunto completo. `Assets/Fonts`, en la raíz del repositorio, contiene las fuentes proporcionadas para la aplicación.
 
-## Imagen e iconos temporales
+## Imágenes e icono del ave
 
-`Assets/Images/pequeno.png` se muestra centrado encima de «Chucao» en la vista principal. La imagen ocupa 96 × 96 unidades de WPF, mantiene su proporción y reduce el espacio restante del contenedor de listas, que sigue siendo desplazable. Sus dimensiones y separación están en `Views/ListsView.xaml`, en el elemento `HomeBirdImage` (`Width`, `Height`, `Margin` y `Stretch`).
+`Assets/Images/stand.png` se muestra centrado encima de «Chucao» en la vista principal. La imagen ocupa 96 × 96 unidades de WPF, mantiene su proporción y reduce el espacio restante del contenedor de listas, que sigue siendo desplazable. Sus dimensiones y separación están en `Views/ListsView.xaml`, en el elemento `HomeBirdImage` (`Width`, `Height`, `Margin` y `Stretch`).
 
-El icono del ejecutable usa `Assets/Images/pequeno.ico`, convertido desde el PNG con transparencia y tamaños 16, 24, 32, 48, 64, 128 y 256. El estilo compartido `AppWindowStyle` de `Resources/Typography.xaml` aplica el mismo icono a las ventanas y sus botones de la barra de tareas. Los dos archivos temporales están excluidos de Git mediante reglas específicas de `.gitignore`; no se excluye toda la carpeta de imágenes.
+El icono del ejecutable usa `Assets/Images/icono.ico`, convertido desde `icono.png` con transparencia y tamaños 16, 24, 32, 48, 64, 128 y 256. El estilo compartido `AppWindowStyle` de `Resources/Typography.xaml` aplica el mismo icono a la barra de título de las ventanas y sus botones de la barra de tareas. Los PNG definitivos y el ICO generado se incluyen en Git; el sonido temporal sigue excluido.
 
-Para usar el diseño definitivo:
+Para reemplazar las imágenes:
 
-1. Agregar su PNG e ICO en `Assets/Images`.
-2. Cambiar únicamente las rutas `ApplicationImageFile` y `ApplicationIconFile` al principio de `src/Chucao/Chucao.csproj`. `ApplicationIcon` configura el ejecutable. Los alias internos `Assets/Images/Application.png` y `Assets/Images/Application.ico` permanecen estables, por lo que no hace falta cambiar las vistas ni `App.xaml.cs`.
-3. Si se mantienen los nombres temporales para los archivos definitivos, quitar sus dos reglas de `.gitignore` para poder versionarlos. Si se usan nombres nuevos, esas reglas no los afectan.
-4. Compilar de nuevo para actualizar los recursos y el icono del ejecutable.
+1. Reemplazar `stand.png`, `fly1.png`, `fly2.png` o `icono.png` en `Assets/Images`. Después de cambiar `icono.png`, regenerar `icono.ico` con el conversor.
+2. Si se cambian sus nombres o ubicaciones, ajustar `ApplicationImageFile`, `ApplicationIconFile`, `BirdFly1ImageFile` y `BirdFly2ImageFile` al principio de `src/Chucao/Chucao.csproj`. `ApplicationIcon` configura el ejecutable. Los alias internos permanecen estables, por lo que no hace falta cambiar las vistas ni `App.xaml.cs`.
+3. Compilar de nuevo para actualizar los recursos y el icono del ejecutable.
 
-`App.xaml.cs` carga los recursos gráficos antes de abrir la ventana. Si no están los archivos temporales en otro checkout, se omiten de la compilación y la aplicación utiliza su icono genérico y oculta la imagen de portada sin dejar un hueco.
+`App.xaml.cs` carga y congela los cinco recursos gráficos antes de abrir la ventana: `ApplicationImage` (stand), `ApplicationWindowIcon` (icono), `BirdFly1Image`, `BirdFly2Image` y `StumpImage` (tronco). Las imágenes definitivas son recursos requeridos del proyecto y se distribuyen dentro de la aplicación.
 
-El conversor reutilizable está en `tools/Convert-PngToIcon.ps1`. Desde la raíz del repositorio, ejecutarlo con `-InputPath .\Assets\Images\pequeno.png -OutputPath .\Assets\Images\pequeno.ico`; añadir `-Force` solo para reemplazar un ICO existente. Si la política local impide ejecutar scripts, se necesita autorizar su ejecución; no es necesario cambiar permanentemente la configuración del sistema. El conversor conserva el PNG original y centra imágenes no cuadradas sin deformarlas.
+El conversor reutilizable está en `tools/Convert-PngToIcon.ps1`. Desde la raíz del repositorio, ejecutarlo con `-InputPath .\Assets\Images\icono.png -OutputPath .\Assets\Images\icono.ico`; añadir `-Force` solo para reemplazar un ICO existente. Para ejecutarlo con una política limitada al proceso puede usarse `powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\tools\Convert-PngToIcon.ps1` seguido de esos parámetros. El conversor conserva el PNG original y centra imágenes no cuadradas sin deformarlas.
 
 Para cambiar dimensiones de botones:
 
@@ -75,7 +74,7 @@ Para cambiar dimensiones de botones:
 | Temporizador principal | `Views/ListsView.xaml`, `TimerButton` | `Padding="12,10"` y `Margin="0,16,0,0"`; se puede fijar `Height` o `MinHeight`. |
 | Otros botones | Su archivo de `Views` y los estilos de `Controls.xaml` | `Width`, `Height`, `MinWidth`, `MinHeight`, `Padding` y `Margin`. Los valores locales de las vistas tienen prioridad sobre el estilo. |
 
-`MinHeight` es una altura mínima y permite crecer con el contenido; `Height` fija la altura. `Padding` es el espacio interior y `Margin` el exterior. Las medidas son unidades de WPF. Se verificó que WPF decodifica los siete tamaños del ICO y que Git ignora ambos archivos temporales. No se ejecutó build ni revisión visual de la aplicación.
+`MinHeight` es una altura mínima y permite crecer con el contenido; `Height` fija la altura. `Padding` es el espacio interior y `Margin` el exterior. Las medidas son unidades de WPF.
 
 ## Tipografía
 
@@ -140,7 +139,7 @@ Los botones comparten contorno de una unidad, esquinas ligeramente redondeadas, 
 | Deslizador y fondo de desplazamiento | `ScrollThumbColor` (#FF931F), `ScrollTrackColor` (#FFBF4F) y `ScrollBarThickness` (14). Su plantilla está en `Controls.xaml`. |
 | Campos de texto | `InputColor` (blanco), `InputCornerRadius` y la plantilla `TextBox` de `Controls.xaml`. |
 | Selector y opciones de minutos | Las plantillas `ComboBox` y `ComboBoxItem` de `Controls.xaml`; usan `SettingsColor`, `SettingsHoverColor`, `ViewBackgroundColor` y `TextColor`. |
-| Canvas de animación | En `Resources/Palette.xaml`: `AnimationColor` (#94D6FF), `AnimationCanvasWidth` (380), `AnimationCanvasHeight` (260) y `AnimationCornerRadius` (12). El `Canvas` rectangular de `Views/TimerView.xaml` recorta su fondo y contenido con esquinas redondeadas. El recorte se ajusta al tamaño en `AnimationCanvas_SizeChanged`, en `Views/TimerView.xaml.cs`. El `Viewbox` lo reduce proporcionalmente si falta espacio: las medidas son unidades lógicas de WPF, no una garantía del tamaño visible. |
+| Canvas de animación | En `Resources/Palette.xaml`: `AnimationColor` (cielo, #83DDF7), `AnimationGroundColor` (terreno, #86D964), `AnimationPathColor` (camino, #AAA184), `AnimationCanvasWidth` (380), `AnimationCanvasHeight` (260) y `AnimationCornerRadius` (12). El `Canvas` rectangular de `Views/TimerView.xaml` recorta su fondo y contenido con esquinas redondeadas. El recorte se ajusta al tamaño en `AnimationCanvas_SizeChanged`, en `Views/TimerView.xaml.cs`. El `Viewbox` lo reduce proporcionalmente si falta espacio: las medidas son unidades lógicas de WPF, no una garantía del tamaño visible. |
 | Tamaño y ubicación de un botón concreto | `Width`, `Height`, `MinHeight`, `Padding` y `Margin` del botón en su archivo de `Views`. |
 
 Los márgenes siguen el orden izquierda, arriba, derecha, abajo. Los valores de las vistas tienen prioridad sobre los setters de los estilos. Los colores se comparten mediante `DynamicResource`; las variantes de botones heredan de `AppButtonStyle`. Para crear otra variante, basarla en ese estilo y definir `Background` y su trigger `IsMouseOver`.
@@ -149,11 +148,17 @@ Se cargaron los tres diccionarios con WPF y se instanciaron las plantillas de bo
 
 ## Recorrido del ave
 
-El arreglo `animationWaypoints` en `Views/TimerView.xaml.cs` define los puntos en orden. Cada `new(x, y)` usa valores de 0 a 1, desde la esquina superior izquierda: X aumenta hacia la derecha e Y hacia abajo. Se pueden editar, añadir o quitar entradas. Los puntos temporales siguen visibles; su diámetro se ajusta con `AnimationWaypointDiameter` en `Resources/Palette.xaml`.
+El fondo se dibuja con figuras de WPF detrás del ave: cielo celeste, terreno verde y un camino trapezoidal que se estrecha hacia el horizonte. En `Views/TimerView.xaml`, el `Viewbox` interior usa un diseño de referencia de 366 × 256 y `Stretch="Fill"` para adaptarlo al ancho y alto del Canvas. El terreno comienza en `Canvas.Top="55"`; el polígono del camino se ajusta en `Points="168,55 208,55 289,256 63,256"`. Los colores están en la paleta. No requiere una imagen de fondo adicional.
+
+Los cinco troncos usan `Assets/Images/tronco.png`, enlazado como `Assets/Images/Stump.png` en `Chucao.csproj` y cargado como `StumpImage` en `App.xaml.cs`. Se dibujan sobre el paisaje y detrás del ave. El arreglo `stumpPlacements` en `Views/TimerView.xaml.cs` contiene `(X, Y, Width, Flip)` en el orden de los puntos: X es el centro horizontal relativo (0–1), Y es el borde superior relativo (0–1), Width es la fracción del ancho del Canvas que ocupa la imagen y Flip refleja horizontalmente el tronco. La altura conserva la proporción original del PNG. Los tamaños aumentan hacia el primer plano, los troncos de la derecha están reflejados y los cercanos a los bordes se recortan con el Canvas, como en la referencia. Este arreglo es independiente de `animationWaypoints`, para poder ajustar los troncos sin cambiar el vuelo. Se recalculan al cambiar las dimensiones del Canvas.
+
+El arreglo `animationWaypoints` en `Views/TimerView.xaml.cs` define los puntos en orden. Cada `new(x, y)` usa valores de 0 a 1, desde la esquina superior izquierda: X aumenta hacia la derecha e Y hacia abajo. Se pueden editar, añadir o quitar entradas. Las coordenadas se conservan para el vuelo, pero sus puntos de guía ya no se dibujan.
 
 En `TimerView.xaml.cs`, `FinalFlightSeconds` (2) es la duración del último vuelo y `EarlierFlightIncrementSeconds` (2) es el incremento por cada vuelo anterior. Con cinco puntos, los vuelos duran 8, 6, 4 y 2 segundos. El tiempo restante se reparte por igual entre los primeros cuatro puntos, sin espera al final. Si la suma de vuelos supera el temporizador, cada tramo recibe exactamente `duración / cantidad de tramos`, sin esperas y con giro instantáneo en las llegadas. Este caso está comentado en `Views/BirdFlightTimeline.cs`.
 
-`BirdInitialSize` (24) y `BirdFinalSize` (80), en `Resources/Palette.xaml`, definen la caja cuadrada de la imagen, conservando su proporción. La imagen usa el mismo recurso `ApplicationImage` que la portada. Se posiciona por su centro y crece linealmente según el tiempo acumulado en vuelo; durante las esperas conserva el tamaño. Empieza mirando a la izquierda y se refleja horizontalmente en cada llegada, incluida la última. Sin puntos se oculta; con un único punto permanece en él con su tamaño inicial.
+`BirdInitialSize` (24) y `BirdFinalSize` (60), en `Resources/Palette.xaml`, definen la caja cuadrada de la imagen, conservando su proporción. El ave se posiciona por su centro y crece linealmente según el tiempo acumulado en vuelo; durante las esperas conserva el tamaño. Empieza mirando a la derecha, manteniendo la orientación original de las imágenes, y se refleja horizontalmente en cada llegada, incluida la última. La pose inicial usa `ScaleX = 1`. Sin puntos se oculta; con un único punto permanece en él con su tamaño inicial.
+
+Durante las esperas, antes de iniciar, al pausar y al terminar se muestra `stand.png`. Durante cada vuelo se alternan `fly1.png` y `fly2.png`. La constante `FlightFrameSeconds = 0.15`, en `Views/TimerView.xaml.cs`, establece los segundos por imagen: un valor menor acelera el aleteo y uno mayor lo ralentiza; debe ser mayor que 0. Un ciclo de ambas imágenes tarda el doble. El cambio de imagen usa el tiempo transcurrido del temporizador y conserva el tamaño y orientación del ave. Revisar en ambos idiomas el icono, la portada, la alternancia en vuelo, las pausas, los giros y la llegada final; no se ejecutó la build ni se abrió la aplicación en esta tarea.
 
 La animación usa `Timer.Duration` y `Timer.Elapsed`, derivados del mismo reloj monotónico que la cuenta atrás. La vista actualiza ambos al dibujar cada cuadro: pausar congela posición y tamaño; continuar retoma el mismo recorrido; reiniciar vuelve al primer punto. La llegada final coincide con `00:00`. El cálculo visual separado en `BirdFlightTimeline` distingue `Stopped` y `Flying`, sin introducir otra cuenta de tiempo. `tests/Chucao.Checks/BirdFlightChecks.cs` cubre tiempos, esperas, crecimiento, giros y el caso de vuelos que exceden la duración. Se añadieron comprobaciones del reloj compartido en `TimerChecks.cs`. No se ejecutaron build, pruebas ni revisión visual en esta tarea, siguiendo la preferencia del usuario; revisar el recorrido en ambas entradas al temporizador, pausa/continuación, reinicio, cambio de idioma y llegada final.
 
@@ -166,7 +171,6 @@ El sonido temporal está en `Assets/Sounds/bird.wav` y se excluye de Git. `Timer
 - Importar listas desde archivos TXT, con un concepto por línea.
 - Personalizar la apariencia de la aplicación.
 - Extender las traducciones en español e inglés a las nuevas funcionalidades.
-- Incorporar imágenes de aleteo y árboles al recorrido del ave; retirar los puntos temporales cuando termine el ajuste visual.
 
 ## Tecnologías
 
@@ -253,6 +257,6 @@ The timer is accessible from the home screen or a selected concept. Settings (to
 
 Typography is centralized in src/Chucao/Resources/Typography.xaml. Comfortaa-Light.ttf is the regular role and Comfortaa-Bold.ttf is the emphasis role; Chucao.csproj links these two files from the repository's Assets/Fonts directory as WPF resources and distributes OFL.txt. Shared size keys and text brushes cover all UI groups. Custom WPF notices use the same font. The gear retains its icon font, and native Windows captions retain system typography. No build or visual app review was performed for this change.
 
-The temporary bird PNG and generated multi-size ICO are ignored by Git. Chucao.csproj selects their source paths with ApplicationImageFile and ApplicationIconFile; stable internal resource aliases avoid view changes when replacing the artwork. The PNG appears at 96 by 96 WPF units above Chucao, configured in ListsView.xaml. Missing preview files are optional. Convert-PngToIcon.ps1 provides PNG-to-ICO conversion without modifying the source image. No build or visual application review was performed.
+The final artwork uses icono.png (converted to icono.ico) for the executable and window icon, stand.png for the home screen and stationary bird, and fly1.png/fly2.png for flight. Chucao.csproj selects their source paths; stable internal resource aliases keep views independent of filenames. The home image appears at 96 by 96 WPF units, configured in ListsView.xaml. FlightFrameSeconds in TimerView.xaml.cs controls seconds per wing image (0.15 by default). The final artwork and generated ICO are versioned. Convert-PngToIcon.ps1 converts PNG to ICO without modifying the source. No application build or visual app review was performed.
 
 Visual styling now uses Palette.xaml for colors and geometry, Typography.xaml for fonts and Controls.xaml for shared control templates. Buttons have rounded corners, brown outlines and solid shadows offset right/down; named variants provide the requested normal and hover colors. Scrollbars, text fields, minute options and modal backgrounds use the shared palette. NativeWindowColors applies the requested frame, caption and caption-text colors on supported Windows 11 versions without replacing native window controls. Only headless WPF dictionary/template checks were run; no application build or visual review was performed.

@@ -3,7 +3,6 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 using Chucao.ViewModels;
 
@@ -12,19 +11,32 @@ namespace Chucao.Views;
 public partial class TimerView : UserControl
 {
     // Relative (X, Y) coordinates: (0, 0) is top-left; (1, 1) is bottom-right.
-    // Add or remove entries here to change the flight route and temporary markers.
+    // Add or remove entries here to change the flight route.
     private readonly Point[] animationWaypoints =
     [
-        new(0.38, 0.23),
+        new(0.34, 0.23),
         new(0.75, 0.32),
         new(0.23, 0.42),
-        new(0.82, 0.62),
-        new(0.20, 0.75),
+        new(0.86, 0.62),
+        new(0.18, 0.77),
+    ];
+
+    // X is the horizontal center, Y is the top edge, Width is a fraction of canvas width.
+    // Entries follow the waypoint order; Flip mirrors the right-hand stumps horizontally.
+    private readonly (double X, double Y, double Width, bool Flip)[] stumpPlacements =
+    [
+        (0.34, 0.25, 0.17, false),
+        (0.75, 0.33, 0.20, true),
+        (0.20, 0.46, 0.23, false),
+        (0.86, 0.67, 0.28, true),
+        (0.15, 0.80, 0.35, false),
     ];
 
     // Seconds: work backwards from the final flight, adding the increment per leg.
-    private const double FinalFlightSeconds = 2;
-    private const double EarlierFlightIncrementSeconds = 2;
+    private const double FinalFlightSeconds = 1;
+    private const double EarlierFlightIncrementSeconds = 1;
+    // Seconds per wing image: lower values produce faster flapping. Keep greater than 0.
+    private const double FlightFrameSeconds = 0.1;
 
     // Volume ranges from 0 (silent) to 1 (maximum); Windows volume also applies.
     private const double CompletionSoundVolume = 0.6;
@@ -61,7 +73,7 @@ public partial class TimerView : UserControl
     {
         // Clip both the background and future scene elements to the rounded canvas.
         AnimationClip.Rect = new Rect(new Point(0, 0), e.NewSize);
-        DrawWaypointMarkers(e.NewSize);
+        DrawStumps(e.NewSize);
         UpdateBird();
     }
 
@@ -96,19 +108,25 @@ public partial class TimerView : UserControl
         }
     }
 
-    private void DrawWaypointMarkers(Size canvasSize)
+    private void DrawStumps(Size canvasSize)
     {
-        WaypointLayer.Children.Clear();
-        double diameter = (double)FindResource("AnimationWaypointDiameter");
-
-        foreach (Point waypoint in animationWaypoints)
+        StumpLayer.Children.Clear();
+        var source = (ImageSource)FindResource("StumpImage");
+        foreach (var placement in stumpPlacements)
         {
-            var marker = new Ellipse { Width = diameter, Height = diameter };
-            marker.SetResourceReference(Shape.FillProperty, "TextBrush");
-            // Center each marker on its relative position within the whole canvas.
-            Canvas.SetLeft(marker, waypoint.X * canvasSize.Width - diameter / 2);
-            Canvas.SetTop(marker, waypoint.Y * canvasSize.Height - diameter / 2);
-            WaypointLayer.Children.Add(marker);
+            double width = placement.Width * canvasSize.Width;
+            var stump = new Image
+            {
+                Source = source,
+                Width = width,
+                Height = width * source.Height / source.Width,
+                Stretch = Stretch.Uniform,
+                RenderTransformOrigin = new Point(0.5, 0.5),
+                RenderTransform = new ScaleTransform(placement.Flip ? -1 : 1, 1)
+            };
+            Canvas.SetLeft(stump, placement.X * canvasSize.Width - width / 2);
+            Canvas.SetTop(stump, placement.Y * canvasSize.Height);
+            StumpLayer.Children.Add(stump);
         }
     }
 
@@ -132,6 +150,16 @@ public partial class TimerView : UserControl
         BirdFlightFrame frame = BirdFlightTimeline.Evaluate(main.Timer.Duration.TotalSeconds,
             main.Timer.Elapsed.TotalSeconds, animationWaypoints.Length,
             FinalFlightSeconds, EarlierFlightIncrementSeconds);
+        string imageKey = "ApplicationImage";
+        if (main.Timer.IsRunning && frame.State == BirdMotionState.Flying)
+        {
+            // The shared elapsed clock freezes wing animation while the timer is paused.
+            long wingFrame = (long)(main.Timer.Elapsed.TotalSeconds / FlightFrameSeconds);
+            imageKey = wingFrame % 2 == 0 ? "BirdFly1Image" : "BirdFly2Image";
+        }
+        var image = (ImageSource)FindResource(imageKey);
+        if (!ReferenceEquals(BirdImage.Source, image))
+            BirdImage.Source = image;
         Point from = animationWaypoints[frame.FromIndex];
         Point to = animationWaypoints[frame.ToIndex];
         double x = from.X + (to.X - from.X) * frame.FlightProgress;
@@ -143,9 +171,8 @@ public partial class TimerView : UserControl
         BirdImage.Height = size;
         Canvas.SetLeft(BirdImage, x * AnimationCanvas.ActualWidth - size / 2);
         Canvas.SetTop(BirdImage, y * AnimationCanvas.ActualHeight - size / 2);
-        // The source artwork faces left; flip once for every completed flight.
-        BirdDirection.ScaleX = frame.FacingLeft ? 1 : -1;
-        // Future wing frames should animate only while IsRunning and frame.State == Flying.
+        // Keep the original right-facing pose first, then flip at each arrival.
+        BirdDirection.ScaleX = frame.FacingRight ? 1 : -1;
     }
 
     private void StopPlaybackAndRefresh()

@@ -31,7 +31,9 @@
     <Color x:Key="PinkHoverColor">#FDA1FF</Color>
     <Color x:Key="OrangeColor">#FFDFAB</Color>
     <Color x:Key="OrangeHoverColor">#FFC970</Color>
-    <Color x:Key="AnimationColor">#94D6FF</Color>
+    <Color x:Key="AnimationColor">#83DDF7</Color>
+    <Color x:Key="AnimationGroundColor">#86D964</Color>
+    <Color x:Key="AnimationPathColor">#AAA184</Color>
     <Color x:Key="InputColor">#FFFFFF</Color>
 
     <SolidColorBrush x:Key="TextBrush" Color="{DynamicResource TextColor}" />
@@ -64,6 +66,8 @@
     <SolidColorBrush x:Key="OrangeBrush" Color="{DynamicResource OrangeColor}" />
     <SolidColorBrush x:Key="OrangeHoverBrush" Color="{DynamicResource OrangeHoverColor}" />
     <SolidColorBrush x:Key="AnimationBrush" Color="{DynamicResource AnimationColor}" />
+    <SolidColorBrush x:Key="AnimationGroundBrush" Color="{DynamicResource AnimationGroundColor}" />
+    <SolidColorBrush x:Key="AnimationPathBrush" Color="{DynamicResource AnimationPathColor}" />
     <SolidColorBrush x:Key="InputBrush" Color="{DynamicResource InputColor}" />
 
     <!-- Geometry and spacing. Shadow offsets extend only to the right and down. -->
@@ -78,9 +82,8 @@
     <sys:Double x:Key="AnimationCanvasWidth">380</sys:Double>
     <sys:Double x:Key="AnimationCanvasHeight">260</sys:Double>
     <sys:Double x:Key="AnimationCornerRadius">12</sys:Double>
-    <sys:Double x:Key="AnimationWaypointDiameter">8</sys:Double>
-    <sys:Double x:Key="BirdInitialSize">24</sys:Double>
-    <sys:Double x:Key="BirdFinalSize">60</sys:Double>
+    <sys:Double x:Key="BirdInitialSize">36</sys:Double>
+    <sys:Double x:Key="BirdFinalSize">80</sys:Double>
     <Thickness x:Key="DefaultButtonPadding">12,8</Thickness>
     <Thickness x:Key="ListCardMargin">6</Thickness>
     <Thickness x:Key="AddListMargin">6,12,6,6</Thickness>
