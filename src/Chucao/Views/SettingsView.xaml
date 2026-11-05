@@ -2,17 +2,50 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              IsVisibleChanged="View_IsVisibleChanged">
-    <StackPanel>
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" MaxHeight="440">
+    <StackPanel Margin="0,0,4,4">
         <TextBlock Text="{Binding Localization[Settings.Title]}" Style="{StaticResource SettingsTitleTextStyle}"
-                    TextWrapping="Wrap" Margin="0,0,0,20" />
+                    TextWrapping="Wrap" Margin="0,0,0,14" />
         <Label Content="{Binding Localization[Timer.Duration]}"
                Target="{Binding ElementName=MinutesInput}" Padding="0,0,0,8" />
         <ComboBox x:Name="MinutesInput" ItemsSource="{Binding TimerMinuteOptions}"
                   SelectedItem="{Binding DraftTimerMinutes, Mode=TwoWay}"
                   AutomationProperties.Name="{Binding Localization[Timer.Duration]}" />
         <TextBlock Text="{Binding Localization[Timer.DurationHelp]}" Style="{StaticResource SecondaryTextStyle}"
-                   TextWrapping="Wrap" Margin="0,8,0,24" />
-        <Button Margin="{DynamicResource FinalDialogActionMargin}" Style="{StaticResource BackButtonStyle}" Content="{Binding Localization[Lists.Back]}" Command="{Binding SaveSettingsCommand}"
-                IsEnabled="{Binding CanSaveTimerSettings}" Padding="12,8" HorizontalAlignment="Right" />
+                   TextWrapping="Wrap" Margin="0,6,0,14" />
+        <Label Content="{Binding Localization[Timer.SoundVolume]}" Target="{Binding ElementName=VolumeSlider}" Padding="0" />
+        <Grid Margin="0,4,0,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <Slider x:Name="VolumeSlider" Style="{StaticResource VolumeSliderStyle}"
+                    Minimum="0" Maximum="1" SmallChange="0.01" LargeChange="0.1" TickFrequency="0.01"
+                    IsSnapToTickEnabled="True" IsMoveToPointEnabled="True"
+                    Value="{Binding DraftTimerSoundVolume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    AutomationProperties.Name="{Binding Localization[Timer.SoundVolume]}" />
+            <TextBlock Grid.Column="1" Text="{Binding TimerSoundVolumeText}" VerticalAlignment="Center" Margin="12,0,0,0" />
+        </Grid>
+        <Grid Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button Style="{StaticResource BlueButtonStyle}" Command="{Binding TestTimerSoundCommand}"
+                    Margin="{DynamicResource LeftActionMargin}">
+                <TextBlock Text="{Binding Localization[Timer.TestSound]}" TextWrapping="Wrap" TextAlignment="Center" />
+            </Button>
+            <Button Grid.Column="1" Style="{StaticResource SettingsButtonStyle}"
+                    Command="{Binding ToggleTimerSoundCommand}" Margin="{DynamicResource RightActionMargin}"
+                    AutomationProperties.HelpText="{Binding Localization[Timer.SoundToggleHelp]}">
+                <TextBlock Text="{Binding TimerSoundToggleText}" TextWrapping="Wrap" TextAlignment="Center" />
+            </Button>
+        </Grid>
+        <Button x:Name="CreditsButton" Style="{StaticResource PurpleButtonStyle}"
+                Content="{Binding Localization[Credits.Title]}" Command="{Binding OpenCreditsCommand}" Margin="0,0,3,0" />
+        <Button Style="{StaticResource BackButtonStyle}" Content="{Binding Localization[Lists.Back]}"
+                Command="{Binding SaveSettingsCommand}" IsEnabled="{Binding CanSaveTimerSettings}"
+                Padding="12,8" HorizontalAlignment="Center" Margin="0,20,3,4" />
     </StackPanel>
+    </ScrollViewer>
 </UserControl>

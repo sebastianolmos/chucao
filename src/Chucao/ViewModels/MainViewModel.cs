@@ -29,6 +29,11 @@ public sealed class MainViewModel : INotifyPropertyChanged
     private bool timerReturnsToConcept;
     private int configuredTimerMinutes = 1;
     private int draftTimerMinutes = 1;
+    private double configuredTimerSoundVolume = 0.6;
+    private bool configuredTimerSoundEnabled = true;
+    private double draftTimerSoundVolume = 0.6;
+    private bool draftTimerSoundEnabled = true;
+    private bool isShowingCredits;
 
     public MainViewModel(ListFileService? listFiles = null, Random? random = null,
         SettingsService? settings = null, TimeProvider? timeProvider = null)
@@ -56,7 +61,13 @@ public sealed class MainViewModel : INotifyPropertyChanged
                 SetDialog(creating: false, deleting: true);
         });
         ConfirmDeleteCommand = new RelayCommand(_ => ConfirmDelete());
-        CancelDialogCommand = new RelayCommand(_ => SetDialog(creating: false, deleting: false));
+        CancelDialogCommand = new RelayCommand(_ =>
+        {
+            if (IsShowingCredits)
+                SetCreditsVisible(false);
+            else
+                SetDialog(creating: false, deleting: false);
+        });
         AddConceptCommand = new RelayCommand(_ =>
         {
             if (!HasSelectedList)
@@ -90,16 +101,33 @@ public sealed class MainViewModel : INotifyPropertyChanged
             if (!IsListsVisible || IsDialogOpen)
                 return;
             DraftTimerMinutes = configuredTimerMinutes;
+            DraftTimerSoundVolume = configuredTimerSoundVolume;
+            DraftTimerSoundEnabled = configuredTimerSoundEnabled;
             SetDialog(creating: false, deleting: false, showingSettings: true);
         });
         SaveSettingsCommand = new RelayCommand(_ => SaveTimerSettings());
+        TestTimerSoundCommand = new RelayCommand(_ =>
+        {
+            if (IsShowingSettings && !IsShowingCredits)
+                SoundPreviewRequested?.Invoke(DraftTimerSoundVolume);
+        });
+        ToggleTimerSoundCommand = new RelayCommand(_ => DraftTimerSoundEnabled = !DraftTimerSoundEnabled);
+        OpenCreditsCommand = new RelayCommand(_ =>
+        {
+            if (IsShowingSettings)
+                SetCreditsVisible(true);
+        });
+        CloseCreditsCommand = new RelayCommand(_ => SetCreditsVisible(false));
         OpenTimerCommand = new RelayCommand(_ => OpenTimer(fromConcept: false));
         OpenConceptTimerCommand = new RelayCommand(_ => OpenTimer(fromConcept: true));
         ReturnFromTimerCommand = new RelayCommand(_ => ReturnFromTimer());
         Localization.PropertyChanged += (_, args) =>
         {
             if (args.PropertyName == nameof(Localization.CurrentLanguage))
+            {
                 Notify(nameof(AdditionNoticeText));
+                Notify(nameof(TimerSoundToggleText));
+            }
         };
     }
 
@@ -107,6 +135,33 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public TimerViewModel Timer { get; }
     public IEnumerable<int> TimerMinuteOptions { get; } = Enumerable.Range(1, 59);
     public int ConfiguredTimerMinutes => configuredTimerMinutes;
+    public double ConfiguredTimerSoundVolume => configuredTimerSoundVolume;
+    public bool ConfiguredTimerSoundEnabled => configuredTimerSoundEnabled;
+    public double DraftTimerSoundVolume
+    {
+        get => draftTimerSoundVolume;
+        set
+        {
+            draftTimerSoundVolume = value;
+            Notify(nameof(DraftTimerSoundVolume));
+            Notify(nameof(TimerSoundVolumeText));
+            Notify(nameof(CanSaveTimerSettings));
+        }
+    }
+    public bool DraftTimerSoundEnabled
+    {
+        get => draftTimerSoundEnabled;
+        set
+        {
+            draftTimerSoundEnabled = value;
+            Notify(nameof(DraftTimerSoundEnabled));
+            Notify(nameof(TimerSoundToggleText));
+        }
+    }
+    public string TimerSoundVolumeText => $"{Math.Round(DraftTimerSoundVolume * 100):0}%";
+    public string TimerSoundToggleText => Localization[DraftTimerSoundEnabled ? "Timer.SoundOn" : "Timer.SoundOff"];
+    public bool IsShowingCredits => isShowingCredits;
+    public bool IsBaseDialogEnabled => !IsShowingCredits;
     public int DraftTimerMinutes
     {
         get => draftTimerMinutes;
@@ -117,7 +172,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
             Notify(nameof(CanSaveTimerSettings));
         }
     }
-    public bool CanSaveTimerSettings => DraftTimerMinutes is >= 1 and <= 59;
+    public bool CanSaveTimerSettings => DraftTimerMinutes is >= 1 and <= 59
+        && double.IsFinite(DraftTimerSoundVolume) && DraftTimerSoundVolume is >= 0 and <= 1;
     public bool IsShowingSettings => isShowingSettings;
     public bool IsTimerVisible => isTimerVisible;
     public bool IsListDetailVisible => HasSelectedList && !IsTimerVisible;
@@ -213,36 +269,47 @@ public sealed class MainViewModel : INotifyPropertyChanged
     public ICommand SelectRandomConceptCommand { get; }
     public ICommand OpenSettingsCommand { get; }
     public ICommand SaveSettingsCommand { get; }
+    public ICommand TestTimerSoundCommand { get; }
+    public ICommand ToggleTimerSoundCommand { get; }
+    public ICommand OpenCreditsCommand { get; }
+    public ICommand CloseCreditsCommand { get; }
     public ICommand OpenTimerCommand { get; }
     public ICommand OpenConceptTimerCommand { get; }
     public ICommand ReturnFromTimerCommand { get; }
 
     public event Action<string, string?>? WarningRequested;
+    public event Action<double>? SoundPreviewRequested;
 
     public void LoadTimerSettings()
     {
         try
         {
             configuredTimerMinutes = settings.LoadTimerMinutes();
-            Notify(nameof(ConfiguredTimerMinutes));
+            configuredTimerSoundVolume = settings.LoadTimerSoundVolume();
+            configuredTimerSoundEnabled = settings.LoadTimerSoundEnabled();
+            NotifyTimerSettings();
         }
         catch (Exception exception) when (ListFileService.IsFileError(exception))
         {
             configuredTimerMinutes = 1;
-            Notify(nameof(ConfiguredTimerMinutes));
+            configuredTimerSoundVolume = 0.6;
+            configuredTimerSoundEnabled = true;
+            NotifyTimerSettings();
             WarningRequested?.Invoke("Timer.SettingsReadError", null);
         }
     }
 
     private void SaveTimerSettings()
     {
-        if (!IsShowingSettings || !CanSaveTimerSettings)
+        if (!IsShowingSettings || IsShowingCredits || !CanSaveTimerSettings)
             return;
         try
         {
-            settings.SaveTimerMinutes(DraftTimerMinutes);
+            settings.SaveTimerSettings(DraftTimerMinutes, DraftTimerSoundVolume, DraftTimerSoundEnabled);
             configuredTimerMinutes = DraftTimerMinutes;
-            Notify(nameof(ConfiguredTimerMinutes));
+            configuredTimerSoundVolume = DraftTimerSoundVolume;
+            configuredTimerSoundEnabled = DraftTimerSoundEnabled;
+            NotifyTimerSettings();
             SetDialog(creating: false, deleting: false);
         }
         catch (Exception exception) when (ListFileService.IsFileError(exception))
@@ -262,6 +329,20 @@ public sealed class MainViewModel : INotifyPropertyChanged
         ClearAdditionNotice();
         Timer.Prepare(configuredTimerMinutes, concept);
         SetTimerVisible(true);
+    }
+
+    private void NotifyTimerSettings()
+    {
+        Notify(nameof(ConfiguredTimerMinutes));
+        Notify(nameof(ConfiguredTimerSoundVolume));
+        Notify(nameof(ConfiguredTimerSoundEnabled));
+    }
+
+    private void SetCreditsVisible(bool visible)
+    {
+        isShowingCredits = visible;
+        Notify(nameof(IsShowingCredits));
+        Notify(nameof(IsBaseDialogEnabled));
     }
 
     private void ReturnFromTimer()
@@ -340,6 +421,8 @@ public sealed class MainViewModel : INotifyPropertyChanged
         isAddingConceptSet = addingSet;
         isShowingSelectedConcept = showingSelectedConcept;
         isShowingSettings = showingSettings;
+        if (!showingSettings)
+            SetCreditsVisible(false);
         if (!showingSelectedConcept)
         {
             selectedConcept = null;

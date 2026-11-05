@@ -29,6 +29,41 @@ public sealed class SettingsService
         return minutes;
     }
 
+    public double LoadTimerSoundVolume()
+    {
+        var values = ReadValues();
+        if (!values.TryGetValue("TimerSoundVolume", out string? text))
+            return 0.6;
+        if (!double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out double volume)
+            || !double.IsFinite(volume) || volume is < 0 or > 1)
+            throw new InvalidDataException("Unsupported timer sound volume.");
+        return volume;
+    }
+
+    public bool LoadTimerSoundEnabled()
+    {
+        var values = ReadValues();
+        if (!values.TryGetValue("TimerSoundEnabled", out string? text))
+            return true;
+        if (!bool.TryParse(text, out bool enabled))
+            throw new InvalidDataException("Unsupported timer sound preference.");
+        return enabled;
+    }
+
+    public void SaveTimerSettings(int minutes, double volume, bool soundEnabled)
+    {
+        if (minutes is < 1 or > 59)
+            throw new ArgumentOutOfRangeException(nameof(minutes));
+        if (!double.IsFinite(volume) || volume is < 0 or > 1)
+            throw new ArgumentOutOfRangeException(nameof(volume));
+        var updatedValues = ReadValues();
+        updatedValues["TimerMinutes"] = minutes.ToString(CultureInfo.InvariantCulture);
+        updatedValues["TimerSoundVolume"] = volume.ToString(CultureInfo.InvariantCulture);
+        updatedValues["TimerSoundEnabled"] = soundEnabled ? "true" : "false";
+        // Save the three related preferences together, preserving the other keys.
+        SaveValues(updatedValues);
+    }
+
     private Dictionary<string, string> ReadValues()
     {
         if (!File.Exists(filePath))

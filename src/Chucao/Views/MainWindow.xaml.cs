@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     private bool canSaveSettings = true;
     private IInputElement? dialogPreviousFocus;
     private readonly DispatcherTimer additionNoticeTimer = new() { Interval = TimeSpan.FromSeconds(10) };
+    private readonly TimerSoundPlayer previewSound = new();
 
     public MainWindow()
     {
@@ -25,10 +26,13 @@ public partial class MainWindow : Window
         DataContext = viewModel;
         viewModel.PropertyChanged += ViewModel_PropertyChanged;
         viewModel.WarningRequested += ShowListWarning;
+        viewModel.SoundPreviewRequested += volume => previewSound.Play(volume);
+        previewSound.PlaybackFailed += () => ShowSettingsWarning("Timer.SoundError");
         additionNoticeTimer.Tick += AdditionNoticeTimer_Tick;
         Closed += (_, _) =>
         {
             additionNoticeTimer.Stop();
+            previewSound.Stop();
             viewModel.Timer.Pause();
         };
         Loaded += (_, _) => viewModel.LoadLists();
@@ -48,6 +52,21 @@ public partial class MainWindow : Window
     // Focus belongs to the view; list contents and navigation state belong to the ViewModel.
     private void ViewModel_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
+        if (e.PropertyName == nameof(MainViewModel.DraftTimerSoundVolume))
+            previewSound.Volume = viewModel.DraftTimerSoundVolume;
+        if (e.PropertyName == nameof(MainViewModel.IsShowingSettings) && !viewModel.IsShowingSettings)
+            previewSound.Stop();
+        if (e.PropertyName == nameof(MainViewModel.IsShowingCredits))
+        {
+            if (viewModel.IsShowingCredits)
+                previewSound.Stop();
+            else if (viewModel.IsShowingSettings)
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    if (viewModel.IsShowingSettings && !viewModel.IsShowingCredits)
+                        SettingsContent.FocusCreditsButton();
+                }));
+        }
         if (e.PropertyName == nameof(MainViewModel.AdditionNoticeCount))
         {
             additionNoticeTimer.Stop();

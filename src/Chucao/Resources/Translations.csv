@@ -23,6 +23,21 @@ Concepts.SelectRandom,Seleccionar concepto aleatorio,Select random concept
 Concepts.SelectedTitle,Concepto seleccionado,Selected concept
 Concepts.OpenTimer,Abrir temporizador,Open timer
 Settings.Title,Configuraciones,Settings
+Timer.SoundVolume,Volumen del chucao,Chucao sound volume
+Timer.TestSound,Probar sonido,Test sound
+Timer.SoundOn,Sonido del temporizador: activado,Timer sound: on
+Timer.SoundOff,Sonido del temporizador: desactivado,Timer sound: off
+Timer.SoundToggleHelp,Alterna el sonido al finalizar el temporizador.,Toggle the sound played when the timer finishes.
+Timer.SoundError,No se pudo reproducir el sonido. Comprueba que el archivo de audio esté disponible y que Windows pueda reproducirlo.,The sound could not be played. Check that the audio file is available and Windows can play it.
+Credits.Title,Créditos y licencias,Credits and licenses
+Credits.Developer,Creado y desarrollado por Sebastian Olmos.,Created and developed by Sebastian Olmos.
+Credits.Sound,"Sonido del chucao: Gabriel Morales, XC870902.","Chucao sound: Gabriel Morales, XC870902."
+Credits.Source,Fuente:,Source:
+Credits.SoundLicense,Licencia: CC BY-NC-SA 4.0.,License: CC BY-NC-SA 4.0.
+Credits.Modifications,Modificaciones: reducción de ruido y recorte de fragmentos.,Modifications: noise reduction and excerpt trimming.
+Credits.Distribution,El audio editado y la secuencia audiovisual del temporizador se distribuyen bajo esta misma licencia.,The edited audio and the timer's audiovisual sequence are distributed under this same license.
+Credits.Font,"Tipografía: Comfortaa, SIL Open Font License 1.1.","Font: Comfortaa, SIL Open Font License 1.1."
+Credits.LinkError,No se pudo abrir el enlace en el navegador.,The link could not be opened in the browser.
 Timer.Title,Temporizador,Timer
 Timer.Duration,Duración del temporizador (minutos),Timer duration (minutes)
 Timer.DurationHelp,De 1 a 59 minutos. Volver guarda los cambios. Escape los descarta.,From 1 to 59 minutes. Back saves changes. Escape discards them.
@@ -31,8 +46,8 @@ Timer.Pause,Pausar,Pause
 Timer.Resume,Continuar,Resume
 Timer.Restart,Empezar de nuevo,Start again
 Timer.Remaining,Tiempo restante,Time remaining
-Timer.SettingsReadError,No se pudo leer la duración del temporizador. Se usará 1 minuto y se conservará el archivo de preferencias.,The timer duration could not be read. One minute will be used and the settings file will be preserved.
-Timer.SettingsWriteError,No se pudo guardar la duración. Comprueba el archivo de preferencias y vuelve a intentarlo.,The duration could not be saved. Check the settings file and try again.
+Timer.SettingsReadError,No se pudieron leer las preferencias del temporizador. Se usarán los valores predeterminados y se conservará el archivo.,The timer preferences could not be read. Defaults will be used and the settings file will be preserved.
+Timer.SettingsWriteError,No se pudieron guardar las preferencias del temporizador. Comprueba el archivo y vuelve a intentarlo.,The timer preferences could not be saved. Check the settings file and try again.
 Concepts.RandomError,No se pudo seleccionar y guardar un concepto. Comprueba el archivo y vuelve a intentarlo.,A concept could not be selected and saved. Check the file and try again.
 Concepts.MarkSeen,Visto,Seen
 Concepts.MarkSeenDescription,Marcar como visto,Mark as seen

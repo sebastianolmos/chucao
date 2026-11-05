@@ -39,15 +39,28 @@
                        Stretch="Uniform" RenderTransformOrigin="0.5,0.5"
                        IsHitTestVisible="False" Focusable="False">
                     <Image.RenderTransform>
-                        <ScaleTransform x:Name="BirdDirection" ScaleX="1" />
+                        <ScaleTransform x:Name="BirdScale" ScaleX="1" ScaleY="1" />
                     </Image.RenderTransform>
                 </Image>
             </Canvas>
         </Viewbox>
         <TextBlock Grid.Row="2" Text="{Binding Timer.Concept}" Style="{StaticResource TimerConceptTextStyle}"
                    TextAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,8" />
-        <TextBlock Grid.Row="3" Text="{Binding Timer.DisplayTime}" Style="{StaticResource TimerDigitsTextStyle}"
-                   TextAlignment="Center" AutomationProperties.Name="{Binding Localization[Timer.Remaining]}" />
+        <!-- Fixed character cells keep the clock centered even with proportional numerals. -->
+        <StackPanel x:Name="TimerDigits" Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center"
+                    AutomationProperties.Name="{Binding Localization[Timer.Remaining]}"
+                    AutomationProperties.HelpText="{Binding Timer.DisplayTime}">
+            <TextBlock Text="{Binding Timer.DisplayTime[0]}" Style="{StaticResource TimerDigitsTextStyle}"
+                       Width="{DynamicResource TimerDigitCellWidth}" TextAlignment="Center" />
+            <TextBlock Text="{Binding Timer.DisplayTime[1]}" Style="{StaticResource TimerDigitsTextStyle}"
+                       Width="{DynamicResource TimerDigitCellWidth}" TextAlignment="Center" />
+            <TextBlock Text="{Binding Timer.DisplayTime[2]}" Style="{StaticResource TimerDigitsTextStyle}"
+                       Width="{DynamicResource TimerSeparatorCellWidth}" TextAlignment="Center" />
+            <TextBlock Text="{Binding Timer.DisplayTime[3]}" Style="{StaticResource TimerDigitsTextStyle}"
+                       Width="{DynamicResource TimerDigitCellWidth}" TextAlignment="Center" />
+            <TextBlock Text="{Binding Timer.DisplayTime[4]}" Style="{StaticResource TimerDigitsTextStyle}"
+                       Width="{DynamicResource TimerDigitCellWidth}" TextAlignment="Center" />
+        </StackPanel>
         <Button Style="{StaticResource GreenButtonStyle}" x:Name="StartButton" Grid.Row="4" Width="120" HorizontalAlignment="Center"
                 Command="{Binding Timer.ToggleCommand}" Padding="12,10" Margin="0,12,0,0">
             <Grid>

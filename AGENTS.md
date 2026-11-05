@@ -60,6 +60,7 @@ El desarrollo debe ser incremental y el código debe resultar comprensible para 
 - Al agregar conjuntos pegados, aceptar líneas con `-` inicial, quitar solo ese guion y los espacios exteriores, y omitir vacíos, textos de más de 30 caracteres y duplicados exactos (incluidos los vistos y los del mismo bloque). Conservar el orden y guardar los válidos con estado 0 en una sola operación.
 - Tras agregar un concepto o conjunto, mostrar solo la cantidad añadida junto a «Volver» durante 10 segundos, sin ventana de resultado. Cada nueva adición reinicia el plazo y salir de la lista limpia el aviso. Traducir el texto y admitir el conteo 0.
 - El temporizador usa minutos enteros de 1 a 59 (1 por defecto), persistidos en `settings.csv`. Inicia manualmente y admite pausa/continuación; llega a 00:00 sin valores negativos. Volver lo detiene y restaura la vista de origen; abrirlo de nuevo prepara la duración completa. Escape en configuraciones descarta cambios; «Volver» los guarda.
+- Configuraciones guarda duración, volumen (0–1, 0.6 por defecto) y sonido activado/desactivado juntos. Probar sonido usa el volumen pendiente incluso si el sonido final está desactivado. Los créditos se superponen a Configuraciones; «Volver» o Escape cierra solo los créditos y conserva los cambios pendientes.
 
 ## Comprobación
 

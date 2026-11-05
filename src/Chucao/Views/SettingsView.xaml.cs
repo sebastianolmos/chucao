@@ -7,6 +7,8 @@ public partial class SettingsView : UserControl
 {
     public SettingsView() => InitializeComponent();
 
+    public void FocusCreditsButton() => CreditsButton.Focus();
+
     private void View_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
     {
         if (IsVisible)

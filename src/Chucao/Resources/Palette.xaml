@@ -79,11 +79,15 @@
     <sys:Double x:Key="ButtonShadowOffsetY">3</sys:Double>
     <sys:Double x:Key="DisabledControlOpacity">0.5</sys:Double>
     <sys:Double x:Key="ScrollBarThickness">14</sys:Double>
+    <sys:Double x:Key="TimerDigitCellWidth">48</sys:Double>
+    <sys:Double x:Key="TimerSeparatorCellWidth">20</sys:Double>
     <sys:Double x:Key="AnimationCanvasWidth">380</sys:Double>
     <sys:Double x:Key="AnimationCanvasHeight">260</sys:Double>
     <sys:Double x:Key="AnimationCornerRadius">12</sys:Double>
-    <sys:Double x:Key="BirdInitialSize">36</sys:Double>
-    <sys:Double x:Key="BirdFinalSize">80</sys:Double>
+    <!-- Common image height at 100%; scale multiplies both axes without distortion. -->
+    <sys:Double x:Key="BirdBaseHeight">80</sys:Double>
+    <sys:Double x:Key="BirdInitialScale">0.25</sys:Double>
+    <sys:Double x:Key="BirdFinalScale">1</sys:Double>
     <Thickness x:Key="DefaultButtonPadding">12,8</Thickness>
     <Thickness x:Key="ListCardMargin">6</Thickness>
     <Thickness x:Key="AddListMargin">6,12,6,6</Thickness>

@@ -51,6 +51,7 @@
                              Visibility="{Binding IsTimerVisible, Converter={StaticResource BooleanToVisibility}}" />
         </Grid>
         <Grid Background="{DynamicResource OverlayBrush}"
+              IsEnabled="{Binding IsBaseDialogEnabled}"
               Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibility}}"
               KeyboardNavigation.TabNavigation="Cycle"
               KeyboardNavigation.ControlTabNavigation="Cycle"
@@ -64,8 +65,18 @@
                     <views:CreateConceptView Visibility="{Binding IsCreatingConcept, Converter={StaticResource BooleanToVisibility}}" />
                     <views:AddConceptSetView Visibility="{Binding IsAddingConceptSet, Converter={StaticResource BooleanToVisibility}}" />
                     <views:SelectedConceptView Visibility="{Binding IsShowingSelectedConcept, Converter={StaticResource BooleanToVisibility}}" />
-                    <views:SettingsView Visibility="{Binding IsShowingSettings, Converter={StaticResource BooleanToVisibility}}" />
+                    <views:SettingsView x:Name="SettingsContent" Visibility="{Binding IsShowingSettings, Converter={StaticResource BooleanToVisibility}}" />
                 </Grid>
+            </Border>
+        </Grid>
+        <Grid Background="{DynamicResource OverlayBrush}"
+              Visibility="{Binding IsShowingCredits, Converter={StaticResource BooleanToVisibility}}"
+              KeyboardNavigation.TabNavigation="Cycle" KeyboardNavigation.ControlTabNavigation="Cycle"
+              PreviewKeyDown="DialogOverlay_PreviewKeyDown">
+            <Border Background="{DynamicResource ViewBackgroundBrush}" CornerRadius="{DynamicResource DialogCornerRadius}"
+                    BorderBrush="{DynamicResource TextBrush}" BorderThickness="{DynamicResource ControlBorderThickness}"
+                    Padding="24" Margin="24" VerticalAlignment="Center">
+                <views:CreditsView />
             </Border>
         </Grid>
     </Grid>

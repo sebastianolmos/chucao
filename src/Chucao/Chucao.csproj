@@ -11,7 +11,7 @@
     <ApplicationIconFile>..\..\Assets\Images\icono.ico</ApplicationIconFile>
     <BirdFly1ImageFile>..\..\Assets\Images\fly1.png</BirdFly1ImageFile>
     <BirdFly2ImageFile>..\..\Assets\Images\fly2.png</BirdFly2ImageFile>
-    <TimerCompletionSoundFile>..\..\Assets\Sounds\bird.wav</TimerCompletionSoundFile>
+    <TimerCompletionSoundFile>..\..\Assets\Sounds\chucao.wav</TimerCompletionSoundFile>
     <ApplicationIcon>$(ApplicationIconFile)</ApplicationIcon>
   </PropertyGroup>
 

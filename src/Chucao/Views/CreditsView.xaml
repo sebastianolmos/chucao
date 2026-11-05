@@ -1,0 +1,36 @@
+<UserControl x:Class="Chucao.Views.CreditsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             IsVisibleChanged="View_IsVisibleChanged">
+    <Grid MaxHeight="440">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="{Binding Localization[Credits.Title]}" Style="{StaticResource SettingsTitleTextStyle}"
+                   TextWrapping="Wrap" Margin="0,0,0,16" />
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel Margin="0,0,8,0">
+                <TextBlock Text="{Binding Localization[Credits.Developer]}" TextWrapping="Wrap" Margin="0,0,0,16" />
+                <TextBlock Text="{Binding Localization[Credits.Sound]}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding Localization[Credits.Source]}" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    <Hyperlink NavigateUri="https://xeno-canto.org/870902" RequestNavigate="Link_RequestNavigate"
+                               Foreground="{DynamicResource TextBrush}">https://xeno-canto.org/870902</Hyperlink>
+                </TextBlock>
+                <TextBlock Text="{Binding Localization[Credits.SoundLicense]}" TextWrapping="Wrap" />
+                <TextBlock TextWrapping="Wrap" Margin="0,0,0,12">
+                    <Hyperlink NavigateUri="https://creativecommons.org/licenses/by-nc-sa/4.0/" RequestNavigate="Link_RequestNavigate"
+                               Foreground="{DynamicResource TextBrush}">https://creativecommons.org/licenses/by-nc-sa/4.0/</Hyperlink>
+                </TextBlock>
+                <TextBlock Text="{Binding Localization[Credits.Modifications]}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                <TextBlock Text="{Binding Localization[Credits.Distribution]}" TextWrapping="Wrap" Margin="0,0,0,16" />
+                <TextBlock Text="{Binding Localization[Credits.Font]}" TextWrapping="Wrap" />
+            </StackPanel>
+        </ScrollViewer>
+        <Button x:Name="BackButton" Grid.Row="2" Style="{StaticResource BackButtonStyle}"
+                Content="{Binding Localization[Lists.Back]}" Command="{Binding CloseCreditsCommand}"
+                HorizontalAlignment="Right" Margin="0,16,3,4" />
+    </Grid>
+</UserControl>
